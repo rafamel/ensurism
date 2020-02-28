@@ -1,0 +1,92 @@
+{
+  "name": "slimconf",
+  "version": "0.11.0",
+  "author": "Rafa Mel",
+  "description": "A slim configuration util that fits both the thin and bulky",
+  "keywords": [
+    "config",
+    "configuration",
+    "environment",
+    "instance"
+  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "main": "pkg/dist/index.js",
+  "types": "pkg/dist/index.d.ts",
+  "scripts": {
+    "commit": "kpo commit --",
+    "semantic": "kpo semantic --",
+    "fix": "kpo fix --",
+    "fix:scripts": "kpo fix:scripts --",
+    "lint": "kpo lint --",
+    "lint:md": "kpo lint:md --",
+    "lint:scripts": "kpo lint:scripts --",
+    "clean": "kpo clean --",
+    "clean:build": "kpo clean:build --",
+    "clean:modules": "kpo clean:modules --",
+    "prepublishOnly": "kpo prepublishOnly --",
+    "preversion": "kpo preversion --",
+    "version": "kpo version --",
+    "build": "kpo build --",
+    "build:transpile": "kpo build:transpile --",
+    "build:types": "kpo build:types --",
+    "fix:code": "kpo fix:code --",
+    "lint:code": "kpo lint:code --",
+    "lint:types": "kpo lint:types --",
+    "test": "kpo test --",
+    "verify": "kpo verify --",
+    "validate": "kpo validate --",
+    "docs": "kpo docs --",
+    "build:pack": "kpo build:pack --",
+    "build:static": "kpo build:static --",
+    "release": "kpo release --",
+    "watch": "kpo watch --",
+    "watch:test": "kpo watch:test --"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/rafamel/slimconf",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rafamel/slimconf"
+  },
+  "bugs": {
+    "url": "https://github.com/rafamel/slimconf/issues"
+  },
+  "devDependencies": {
+    "@pika/pack": "^0.4.0",
+    "@pika/plugin-build-web": "^0.8.1",
+    "@pika/plugin-standard-pkg": "^0.8.1",
+    "@riseup/library": "^0.5.0",
+    "@riseup/tooling": "^0.5.0",
+    "@types/jest": "^25.1.3",
+    "@zerollup/ts-transform-paths": "^1.7.11",
+    "coveralls": "^3.0.7",
+    "husky": "^4.2.3",
+    "kpo": "^0.11.1",
+    "onchange": "^6.0.0",
+    "typescript": "^3.8.2"
+  },
+  "dependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "kpo verify"
+    }
+  },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg",
+        {
+          "exclude": [
+            "__mocks__/**/*",
+            "__tests__/**/*"
+          ]
+        }
+      ],
+      [
+        "@pika/plugin-build-web"
+      ]
+    ]
+  }
+}

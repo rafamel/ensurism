@@ -4,12 +4,12 @@ import {
   Type,
   SchemaTypeName,
   EmptyType,
-  Schema
+  BasicType
 } from './types';
 import { constrain } from './constrain';
 import { coerce } from './coerce';
-import { getArgs } from './helpers/get-args';
 import { assert, AssertValue } from './assert';
+import { Selector, Selection, SelectStrategy, select } from './select';
 
 export type Collector<
   I extends Record<string, Type>,
@@ -42,6 +42,26 @@ export interface CollectorFunctions {
     assert: A | EmptyType,
     schema: SchemaOptions<any, D, E, N>
   ): CollectorDataCallback<Type, Response<Type, D, E, N, A>>;
+  select<S extends Selector>(
+    selector: Selector<BasicType, S>
+  ): CollectorDataCallback<Type, Selection<S>>;
+  select<S extends Selector, A extends boolean = false>(
+    assert: A | EmptyType,
+    selector: Selector<BasicType, S>
+  ): CollectorDataCallback<Type, Selection<S, A>>;
+  select<S extends Selector, G extends SelectStrategy = 'fallback'>(
+    strategy: G | EmptyType,
+    selector: Selector<BasicType, S>
+  ): CollectorDataCallback<Type, Selection<S, false, G>>;
+  select<
+    S extends Selector,
+    G extends SelectStrategy = 'fallback',
+    A extends boolean = false
+  >(
+    assert: A | EmptyType,
+    strategy: G | EmptyType,
+    selector: Selector<BasicType, S>
+  ): CollectorDataCallback<Type, Selection<S, A, G>>;
 }
 
 export type CollectorDataCallback<T extends Type, U> = (data: T) => U;
@@ -54,34 +74,29 @@ export type Collection<O extends Record<string, any>> = {
   [P in keyof O]: ReturnType<O[P]>;
 };
 
+const functions: CollectorFunctions = {
+  assert() {
+    return (data: any) => assert(data);
+  },
+  constrain(a: any, b?: any): any {
+    return (data: any) => constrain(data, a, b);
+  },
+  coerce(a: any, b?: any): any {
+    return (data: any) => coerce(data, a, b);
+  },
+  select(a: any, b?: any, c?: any): any {
+    return (data: any) => select(data, a, b, c);
+  }
+};
+
 export function collect<
   I extends Record<string, Type>,
   O extends Record<string, any>
 >(record: I, collector: Collector<I, O>): Collection<O> {
-  const functions: CollectorFunctions = {
-    assert() {
-      return (data: any) => assert(data);
-    },
-    constrain(
-      a: boolean | EmptyType | Schema | SchemaTypeName,
-      b?: Schema | SchemaTypeName
-    ): any {
-      const { assert, schema } = getArgs(a, b);
-      return (data: any) => constrain(data, assert, schema);
-    },
-    coerce(
-      a: boolean | EmptyType | Schema | SchemaTypeName,
-      b?: Schema | SchemaTypeName
-    ): any {
-      const { assert, schema } = getArgs(a, b);
-      return (data: any) => coerce(data, assert, schema);
-    }
-  };
   const callbacks = collector(functions);
   const results: Partial<Collection<O>> = {};
   for (const key of Object.keys(callbacks) as Array<keyof O & keyof I>) {
     results[key] = callbacks[key](record[key]);
   }
-
   return results as Collection<O>;
 }

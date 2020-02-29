@@ -17,6 +17,7 @@ export type Collector<
 > = (fn: CollectorFunctions) => CollectorRecord<I> & O;
 
 export interface CollectorFunctions {
+  get(): Type;
   assert(): AssertValue<Type>;
   constrain<D extends Type, E extends Type, N extends SchemaTypeName = never>(
     schema: SchemaOptions<any, D, E, N>
@@ -70,12 +71,15 @@ export type CollectorRecord<I extends Record<string, Type>> = {
   [P in keyof I]?: CollectorDataCallback<Type, any>;
 };
 
-export type Collection<O extends Record<string, any>> = {
+export type CollectResponse<O extends Record<string, any>> = {
   [P in keyof O]: ReturnType<O[P]>;
 };
 
 const functions: CollectorFunctions = {
-  assert() {
+  get(): any {
+    return (data: any) => data;
+  },
+  assert(): any {
     return (data: any) => assert(data);
   },
   constrain(a: any, b?: any): any {
@@ -92,11 +96,11 @@ const functions: CollectorFunctions = {
 export function collect<
   I extends Record<string, Type>,
   O extends Record<string, any>
->(record: I, collector: Collector<I, O>): Collection<O> {
+>(record: I, collector: Collector<I, O>): CollectResponse<O> {
   const callbacks = collector(functions);
-  const results: Partial<Collection<O>> = {};
+  const results: Partial<CollectResponse<O>> = {};
   for (const key of Object.keys(callbacks) as Array<keyof O & keyof I>) {
     results[key] = callbacks[key](record[key]);
   }
-  return results as Collection<O>;
+  return results as CollectResponse<O>;
 }

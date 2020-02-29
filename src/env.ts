@@ -9,7 +9,7 @@ import {
 } from './types';
 import { constrain } from './constrain';
 import { coerce } from './coerce';
-import { Collector, Collection, collect } from './collect';
+import { Collector, CollectResponse, collect } from './collect';
 import { getArgs } from './helpers/get-args';
 
 export interface Env {
@@ -46,7 +46,7 @@ export interface Env {
   ): Response<Type, D, E, N, A>;
   collect<O extends Record<string, any>>(
     collector: Collector<NodeJS.ProcessEnv, O>
-  ): Collection<O>;
+  ): CollectResponse<O>;
 }
 
 export const env: Env = {
@@ -76,7 +76,7 @@ export const env: Env = {
   },
   collect<O extends Record<string, any>>(
     collector: Collector<NodeJS.ProcessEnv, O>
-  ): Collection<O> {
+  ): CollectResponse<O> {
     return collect(process.env, collector);
   }
 };

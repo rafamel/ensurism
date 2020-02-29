@@ -1,6 +1,10 @@
-export type Type = BasicType | Type[] | object;
+export type Type = BasicType | Type[] | ObjectType;
 
 export type BasicType = undefined | void | null | string | number | boolean;
+
+export interface ObjectType {
+  [key: string]: Type;
+}
 
 export type NotDefinedType = undefined | void;
 

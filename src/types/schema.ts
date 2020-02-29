@@ -1,5 +1,5 @@
 import { JSONSchema7 } from 'json-schema';
-import { Type, NotDefinedType } from './type';
+import { Type, NotDefinedType, ObjectType } from './type';
 
 export interface Schema<T extends Type = Type> extends JSONSchema7 {
   type: SchemaTypeName<T>;
@@ -22,9 +22,9 @@ export type SchemaTypeName<T extends Type = Type> = SchemaType<T> extends null
   ? 'number' | 'integer'
   : SchemaType<T> extends boolean
   ? 'boolean'
-  : SchemaType<T> extends any[]
+  : SchemaType<T> extends Type[]
   ? 'array'
-  : SchemaType<T> extends object
+  : SchemaType<T> extends ObjectType
   ? 'object'
   : 'null' | 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object';
 
@@ -39,7 +39,7 @@ export type SchemaNameType<T extends SchemaTypeName> = T extends 'null'
   : T extends 'boolean'
   ? boolean
   : T extends 'array'
-  ? any[]
+  ? Type[]
   : T extends 'object'
-  ? object
+  ? ObjectType
   : never;

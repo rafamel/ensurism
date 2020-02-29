@@ -1,6 +1,8 @@
 import { JSONSchema7 } from 'json-schema';
-import { Type, NotDefinedType, ObjectType } from './type';
+import { Type, ObjectType } from './type';
+import { ExcludeNotDefined } from './utils';
 
+/** A JSON Schema with a required `type` property */
 export interface Schema<T extends Type = Type> extends JSONSchema7 {
   type: SchemaTypeName<T>;
   default?: SchemaType<T>;
@@ -9,9 +11,8 @@ export interface Schema<T extends Type = Type> extends JSONSchema7 {
   const?: SchemaType<T>;
 }
 
-export type SchemaType<T extends Type = Type> = Exclude<
-  Exclude<T, NotDefinedType> extends never ? Type : T,
-  NotDefinedType
+export type SchemaType<T extends Type = Type> = ExcludeNotDefined<
+  ExcludeNotDefined<T> extends never ? Type : T
 >;
 
 export type SchemaTypeName<T extends Type = Type> = SchemaType<T> extends null

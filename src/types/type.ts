@@ -1,27 +1,17 @@
+/** A serializable type. */
 export type Type = BasicType | Type[] | ObjectType;
 
-export type BasicType = undefined | void | null | string | number | boolean;
+export type EmptyType = NotDefinedType | null;
 
-export interface ObjectType {
-  [key: string]: Type;
-}
+/* Basic */
+export type BasicType = BasicDefinedType | NotDefinedType;
+export type BasicDefinedType = string | number | boolean | null;
 
+/* Not Defined */
 export type NotDefinedType = undefined | void;
 
-export type EmptyType = undefined | void | null;
+/* Defined */
+export type DefinedType = BasicDefinedType | Type[] | ObjectType;
 
-export type GeneralType<T extends Type> = T | T extends number
-  ? number
-  : T extends string
-  ? string
-  : T extends boolean
-  ? boolean
-  : T;
-
-export type NeverConditional<T, A, B> = T extends never ? A : B;
-
-export type EmptyConditional<T, A, B> = NeverConditional<
-  Extract<T, EmptyType>,
-  A,
-  B
->;
+/* Elements */
+export type ObjectType = { [key: string]: Type };

@@ -4,8 +4,6 @@ import { Type, SchemaTypeName, EmptyType, Schema } from '../../types';
 import { getPositionalAssertSchema } from '../../helpers/get-positional';
 import { ConstrainSchema, Constrain } from './types';
 
-const ajv = new Ajv({ useDefaults: true });
-
 export function constrain<
   T extends Type,
   D extends Type,
@@ -29,38 +27,41 @@ export function constrain(
   a: boolean | EmptyType | Schema | SchemaTypeName,
   b?: Schema | SchemaTypeName
 ): Constrain<Type, Type, Type, SchemaTypeName, boolean> {
+  const ajv = new Ajv({ useDefaults: true });
   const { assert, schema } = getPositionalAssertSchema(a, b);
 
-  const validate = ajv.compile({
-    type: 'object',
-    required: assert ? ['data'] : [],
-    properties: { data: schema || {} }
-  });
+  if (!ajv.validateSchema(schema)) {
+    /* istanbul ignore next */
+    throw ajv.errors
+      ? Error(`Schema is not valid: ` + ajv.errorsText(ajv.errors))
+      : Error(`Schema is not valid`);
+  }
+
   const item = { data: deep(data) };
-  const valid = validate(item);
+  const valid = ajv.validate(
+    {
+      type: 'object',
+      required: assert ? ['data'] : [],
+      properties: { data: schema }
+    },
+    item
+  );
 
   if (valid) return item.data as any;
-
-  throw Error(
-    validate.errors
-      ? ajv.errorsText(
-          validate.errors.map((error) => {
-            return {
-              ...error,
-              dataPath: error.dataPath.replace(/^\.data/, ''),
-              schemaPath: error.schemaPath.replace(
-                /^#\/properties\/data/,
-                '/#'
-              ),
-              message: error.message
-                ? error.message.replace(
-                    /should have required property '\.?data'/,
-                    'should not be undefined'
-                  )
-                : 'is not valid'
-            };
-          })
+  /* istanbul ignore next */
+  if (!ajv.errors) throw Error(`Data is not valid`);
+  const message = ajv.errorsText(
+    ajv.errors.map((error) => {
+      return {
+        ...error,
+        dataPath: error.dataPath.replace(/^\.data/, ''),
+        schemaPath: error.schemaPath.replace(/^#\/properties\/data/, '/#'),
+        message: (error.message || 'is not valid').replace(
+          /should have required property '\.?data'/,
+          'should not be undefined'
         )
-      : 'data is not valid'
+      };
+    })
   );
+  throw Error(`Data is not valid: ` + message);
 }

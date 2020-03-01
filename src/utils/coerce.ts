@@ -51,13 +51,6 @@ export function coerce(
   }
 
   switch (schema.type) {
-    case 'null': {
-      const value = coerce(data, 'boolean');
-      if (value === true) {
-        throw Error(`Data couldn't be coerced to null: ${value}`);
-      }
-      return constrain(value === false ? null : undefined, assert, schema);
-    }
     case 'string': {
       return constrain(
         /^".*"$/.test(data) ? data.slice(1, -1) : data,
@@ -69,11 +62,12 @@ export function coerce(
     case 'number': {
       const value = Number(data);
       if (String(value) === 'NaN') {
-        throw Error(`Data couldn't be coerced to number: ${value}`);
+        throw Error(`Data couldn't be coerced to number: ${data}`);
       }
       return constrain(value, assert, schema);
     }
-    case 'boolean': {
+    case 'boolean':
+    case 'null': {
       if (
         data === '0' ||
         data === '' ||
@@ -83,16 +77,25 @@ export function coerce(
         data === 'undefined' ||
         data === 'NaN'
       ) {
-        return constrain(false, assert, schema);
+        return constrain(schema.type === 'null' ? null : false, assert, schema);
+      }
+      if (schema.type === 'null') {
+        throw Error(`Data couldn't be coerced to null: ${data}`);
       }
       return constrain(true, assert, schema);
     }
     case 'array':
     case 'object': {
-      return constrain(JSON.parse(data), assert, schema);
+      let value: any;
+      try {
+        value = JSON.parse(data);
+      } catch (err) {
+        throw Error(`Invalid JSON data for ${schema.type}: ${data}`);
+      }
+      return constrain(value, assert, schema);
     }
     default: {
-      throw Error(`Invalid data type: ${schema.type}`);
+      throw Error(`Invalid schema type: ${schema.type}`);
     }
   }
 }

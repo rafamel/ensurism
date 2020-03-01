@@ -12,7 +12,7 @@ export function assert<T, D extends boolean = false>(
   data: T,
   deep?: D
 ): Assert<T, D> {
-  if (data === undefined) throw Error(`Data should not be undefined`);
+  if (data === undefined) throw Error(`Expected data not to be undefined`);
 
   if (deep && typeof data === 'object' && data !== null) {
     const items = Array.isArray(data) ? data : Object.values(data);

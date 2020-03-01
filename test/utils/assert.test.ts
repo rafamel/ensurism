@@ -9,7 +9,7 @@ test(`succeeds w/ defined data`, () => {
 });
 test(`fails w/ undefined data`, () => {
   expect(() => assert(undefined)).toThrowErrorMatchingInlineSnapshot(
-    `"Data should not be undefined"`
+    `"Expected data not to be undefined"`
   );
 });
 test(`deeps doesn't have an effect on basic types`, () => {

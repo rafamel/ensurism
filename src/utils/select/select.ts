@@ -100,7 +100,7 @@ export function select(
           return deep(selector.default, selector[key]);
         }
         default: {
-          throw Error(`Unknown strategy: ${strategy}`);
+          throw Error(`Invalid select strategy: ${strategy}`);
         }
       }
     },

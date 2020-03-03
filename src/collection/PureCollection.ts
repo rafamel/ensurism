@@ -160,7 +160,7 @@ export class PureCollection<T extends Record<string, any>> {
   ): Collect<O> {
     return collect(
       Object.entries(this.all()).reduce((acc, [key, value]) => {
-        return isType(value) ? Object.assign(acc, { [key]: value }) : value;
+        return isType(value) ? Object.assign(acc, { [key]: value }) : acc;
       }, {}),
       collector
     );

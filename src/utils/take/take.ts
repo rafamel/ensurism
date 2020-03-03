@@ -1,13 +1,6 @@
 import { pipeInto as into } from 'ts-functional-pipe';
-import { NotDefinedType } from '../types';
-import { assert } from './assert';
-
-export type TakeStrategy = 'one' | 'first' | 'maybe';
-
-export type Take<T, A extends boolean = false> = Exclude<
-  T extends Array<infer U> ? U | Exclude<T, any[]> : T,
-  A extends true ? NotDefinedType : never
->;
+import { assert } from '../assert';
+import { TakeStrategy, Take } from './types';
 
 export function take<T>(data: T, strategy: TakeStrategy): Take<T>;
 export function take<T, A extends boolean = false>(

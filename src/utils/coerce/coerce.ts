@@ -1,21 +1,7 @@
-import { Type, SchemaTypeName, SchemaType, EmptyType, Schema } from '../types';
-import { ensure, EnsureSchema, Ensure } from './ensure';
-import { getPositionalAssertSchema } from '../helpers/get-positional';
-
-export type Coerce<
-  T extends string | EmptyType,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName,
-  A extends boolean = false
-> = Ensure<T extends EmptyType ? SchemaType : Type, D, E, N, A>;
-
-export type CoerceSchema<
-  T extends string | EmptyType,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName
-> = EnsureSchema<T extends EmptyType ? SchemaType : Type, D, E, N>;
+import { Type, SchemaTypeName, EmptyType, Schema } from '../../types';
+import { getPositionalAssertSchema } from '../../helpers/get-positional';
+import { ensure } from '../ensure';
+import { CoerceSchema, Coerce } from './types';
 
 export function coerce<
   T extends string | EmptyType,

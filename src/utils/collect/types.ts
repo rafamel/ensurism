@@ -1,7 +1,7 @@
 import { Type, SchemaTypeName, EmptyType, BasicType } from '../../types';
 import { Assert } from '../assert';
 import { SelectSelector, Select, SelectStrategy } from '../select';
-import { Constrain, ConstrainSchema } from '../constrain';
+import { Ensure, EnsureSchema } from '../ensure';
 import { CoerceSchema, Coerce } from '../coerce';
 
 /* Output */
@@ -19,18 +19,18 @@ export type CollectCollectorCallback<T extends Type, U> = (data: T) => U;
 export interface CollectorFunctions {
   get(): Type;
   assert(): Assert<Type>;
-  constrain<D extends Type, E extends Type, N extends SchemaTypeName = never>(
-    schema: ConstrainSchema<any, D, E, N>
-  ): CollectCollectorCallback<Type, Constrain<Type, D, E, N>>;
-  constrain<
+  ensure<D extends Type, E extends Type, N extends SchemaTypeName = never>(
+    schema: EnsureSchema<any, D, E, N>
+  ): CollectCollectorCallback<Type, Ensure<Type, D, E, N>>;
+  ensure<
     D extends Type,
     E extends Type,
     N extends SchemaTypeName = never,
     A extends boolean = false
   >(
     assert: A | EmptyType,
-    schema: ConstrainSchema<any, D, E, N>
-  ): CollectCollectorCallback<Type, Constrain<Type, D, E, N, A>>;
+    schema: EnsureSchema<any, D, E, N>
+  ): CollectCollectorCallback<Type, Ensure<Type, D, E, N, A>>;
   coerce<D extends Type, E extends Type, N extends SchemaTypeName>(
     schema: CoerceSchema<any, D, E, N>
   ): CollectCollectorCallback<Type, Coerce<string | EmptyType, D, E, N>>;

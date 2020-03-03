@@ -9,7 +9,7 @@ import {
 } from '../../types';
 
 /* Output */
-export type Constrain<
+export type Ensure<
   T extends Type,
   D extends Type,
   E extends Type,
@@ -17,23 +17,23 @@ export type Constrain<
   A extends boolean = false
 > = Exclude<
   SchemaTypeName extends N
-    ? Extract<T, ConstrainResponse<T, D, E, N>>
-    : ConstrainResponse<T, D, E, N>,
+    ? Extract<T, EnsureResponse<T, D, E, N>>
+    : EnsureResponse<T, D, E, N>,
   A extends true ? NotDefinedType : never
 >;
 
-type ConstrainResponse<
+type EnsureResponse<
   T extends Type,
   D extends Type,
   E extends Type,
   N extends SchemaTypeName
 > = E extends SchemaType
   ?
-      | Extract<ConstrainResponseExtract<T, D, N>, NotDefinedType>
-      | Extract<E, ConstrainResponseExtract<T, D, N>>
-  : ConstrainResponseExtract<T, D, N>;
+      | Extract<EnsureResponseExtract<T, D, N>, NotDefinedType>
+      | Extract<E, EnsureResponseExtract<T, D, N>>
+  : EnsureResponseExtract<T, D, N>;
 
-export type ConstrainResponseExtract<
+export type EnsureResponseExtract<
   T extends Type,
   D extends Type,
   N extends SchemaTypeName
@@ -45,39 +45,37 @@ export type ConstrainResponseExtract<
 >;
 
 /* Input */
-export type ConstrainSchema<
+export type EnsureSchema<
   T extends Type,
   D extends Type,
   E extends Type,
   N extends SchemaTypeName
-> = ConstrainSchemaRecord<T, D, E, N> | Schema<T> | ConstrainSchemaName<T, N>;
+> = EnsureSchemaRecord<T, D, E, N> | Schema<T> | EnsureSchemaName<T, N>;
 
-export type ConstrainSchemaName<
+export type EnsureSchemaName<
   T extends Type,
   N extends SchemaTypeName
 > = Exclude<SchemaTypeName, SchemaTypeName<T>> extends never
   ? SchemaTypeName & N
   : SchemaTypeName<GeneralizeType<T>> & N;
 
-export type ConstrainSchemaRecord<
+export type EnsureSchemaRecord<
   T extends Type,
   D extends Type,
   E extends Type,
   N extends SchemaTypeName
 > = Exclude<SchemaTypeName, SchemaTypeName<T>> extends never
-  ? ConstrainSchemaRecordComplete<Type, D, E, N>
-  : ConstrainSchemaRecordComplete<GeneralizeType<T>, D, E, N>;
+  ? EnsureSchemaRecordComplete<Type, D, E, N>
+  : EnsureSchemaRecordComplete<GeneralizeType<T>, D, E, N>;
 
-type ConstrainSchemaRecordComplete<
+type EnsureSchemaRecordComplete<
   T extends Type,
   D extends Type,
   E extends Type,
   N extends SchemaTypeName
-> = ConstrainSchemaRecordFragment<N, D, E> &
-  Schema<T> &
-  Schema<SchemaNameType<N>>;
+> = EnsureSchemaRecordFragment<N, D, E> & Schema<T> & Schema<SchemaNameType<N>>;
 
-interface ConstrainSchemaRecordFragment<
+interface EnsureSchemaRecordFragment<
   N extends SchemaTypeName,
   D extends Type,
   E extends Type

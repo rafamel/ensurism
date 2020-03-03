@@ -1,5 +1,5 @@
 export * from './assert';
-export * from './constrain';
+export * from './ensure';
 export * from './coerce';
 export * from './select';
 export * from './collect';

@@ -2,15 +2,15 @@ import Ajv from 'ajv';
 import deep from 'lodash.clonedeep';
 import { Type, SchemaTypeName, EmptyType, Schema } from '../../types';
 import { getPositionalAssertSchema } from '../../helpers/get-positional';
-import { ConstrainSchema, Constrain } from './types';
+import { EnsureSchema, Ensure } from './types';
 
-export function constrain<
+export function ensure<
   T extends Type,
   D extends Type,
   E extends Type,
   N extends SchemaTypeName
->(data: T, schema: ConstrainSchema<T, D, E, N>): Constrain<T, D, E, N>;
-export function constrain<
+>(data: T, schema: EnsureSchema<T, D, E, N>): Ensure<T, D, E, N>;
+export function ensure<
   T extends Type,
   D extends Type,
   E extends Type,
@@ -19,14 +19,14 @@ export function constrain<
 >(
   data: T,
   assert: A | EmptyType,
-  schema: ConstrainSchema<T, D, E, N>
-): Constrain<T, D, E, N, A>;
+  schema: EnsureSchema<T, D, E, N>
+): Ensure<T, D, E, N, A>;
 
-export function constrain(
+export function ensure(
   data: Type,
   a: boolean | EmptyType | Schema | SchemaTypeName,
   b?: Schema | SchemaTypeName
-): Constrain<Type, Type, Type, SchemaTypeName, boolean> {
+): Ensure<Type, Type, Type, SchemaTypeName, boolean> {
   const ajv = new Ajv({ useDefaults: true });
   const { assert, schema } = getPositionalAssertSchema(a, b);
 

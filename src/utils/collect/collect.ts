@@ -1,5 +1,5 @@
 import { Type } from '../../types';
-import { constrain } from '../constrain';
+import { ensure } from '../ensure';
 import { coerce } from '../coerce';
 import { assert } from '../assert';
 import { select } from '../select';
@@ -12,8 +12,8 @@ const functions: CollectorFunctions = {
   assert(): any {
     return (data: any) => assert(data);
   },
-  constrain(a: any, b?: any): any {
-    return (data: any) => constrain(data, a, b);
+  ensure(a: any, b?: any): any {
+    return (data: any) => ensure(data, a, b);
   },
   coerce(a: any, b?: any): any {
     return (data: any) => coerce(data, a, b);

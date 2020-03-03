@@ -1,5 +1,5 @@
 import { Type, SchemaTypeName, SchemaType, EmptyType, Schema } from '../types';
-import { constrain, ConstrainSchema, Constrain } from './constrain';
+import { ensure, EnsureSchema, Ensure } from './ensure';
 import { getPositionalAssertSchema } from '../helpers/get-positional';
 
 export type Coerce<
@@ -8,14 +8,14 @@ export type Coerce<
   E extends Type,
   N extends SchemaTypeName,
   A extends boolean = false
-> = Constrain<T extends EmptyType ? SchemaType : Type, D, E, N, A>;
+> = Ensure<T extends EmptyType ? SchemaType : Type, D, E, N, A>;
 
 export type CoerceSchema<
   T extends string | EmptyType,
   D extends Type,
   E extends Type,
   N extends SchemaTypeName
-> = ConstrainSchema<T extends EmptyType ? SchemaType : Type, D, E, N>;
+> = EnsureSchema<T extends EmptyType ? SchemaType : Type, D, E, N>;
 
 export function coerce<
   T extends string | EmptyType,
@@ -43,7 +43,7 @@ export function coerce(
   const { assert, schema } = getPositionalAssertSchema(a, b);
 
   if (data === undefined) {
-    return constrain(data, assert, schema);
+    return ensure(data, assert, schema);
   }
 
   if (typeof data !== 'string') {
@@ -52,7 +52,7 @@ export function coerce(
 
   switch (schema.type) {
     case 'string': {
-      return constrain(
+      return ensure(
         /^".*"$/.test(data) ? data.slice(1, -1) : data,
         assert,
         schema
@@ -64,7 +64,7 @@ export function coerce(
       if (String(value) === 'NaN') {
         throw Error(`Data couldn't be coerced to number: ${data}`);
       }
-      return constrain(value, assert, schema);
+      return ensure(value, assert, schema);
     }
     case 'boolean':
     case 'null': {
@@ -77,12 +77,12 @@ export function coerce(
         data === 'undefined' ||
         data === 'NaN'
       ) {
-        return constrain(schema.type === 'null' ? null : false, assert, schema);
+        return ensure(schema.type === 'null' ? null : false, assert, schema);
       }
       if (schema.type === 'null') {
         throw Error(`Data couldn't be coerced to null: ${data}`);
       }
-      return constrain(true, assert, schema);
+      return ensure(true, assert, schema);
     }
     case 'array':
     case 'object': {
@@ -92,7 +92,7 @@ export function coerce(
       } catch (err) {
         throw Error(`Invalid JSON data for ${schema.type}: ${data}`);
       }
-      return constrain(value, assert, schema);
+      return ensure(value, assert, schema);
     }
     default: {
       throw Error(`Invalid schema type: ${schema.type}`);

@@ -11,15 +11,15 @@ import { isType } from '../helpers/is-type';
 import {
   Assert,
   assert,
-  constrain,
+  ensure,
   coerce,
   SelectSelector,
   Select,
   SelectStrategy,
   select,
   collect,
-  ConstrainSchema,
-  Constrain,
+  EnsureSchema,
+  Ensure,
   CoerceSchema,
   Coerce
 } from '../utils';
@@ -61,16 +61,13 @@ export class PureCollection<T extends Record<string, any>> {
   ): Assert<T[K], D> {
     return assert(this.get(property), deep);
   }
-  public constrain<
+  public ensure<
     K extends keyof FilterRecordByType<T, Type>,
     D extends Type,
     E extends Type,
     N extends SchemaTypeName
-  >(
-    property: K,
-    schema: ConstrainSchema<T[K], D, E, N>
-  ): Constrain<T[K], D, E, N>;
-  public constrain<
+  >(property: K, schema: EnsureSchema<T[K], D, E, N>): Ensure<T[K], D, E, N>;
+  public ensure<
     K extends keyof FilterRecordByType<T, Type>,
     D extends Type,
     E extends Type,
@@ -79,10 +76,10 @@ export class PureCollection<T extends Record<string, any>> {
   >(
     property: K,
     assert: A | EmptyType,
-    schema: ConstrainSchema<T[K], D, E, N>
-  ): Constrain<T[K], D, E, N, A>;
-  public constrain<K extends keyof T>(property: K, a: any, b?: any): any {
-    return constrain(this.get(property), a, b);
+    schema: EnsureSchema<T[K], D, E, N>
+  ): Ensure<T[K], D, E, N, A>;
+  public ensure<K extends keyof T>(property: K, a: any, b?: any): any {
+    return ensure(this.get(property), a, b);
   }
   public coerce<
     K extends keyof FilterRecordByType<T, string | EmptyType>,

@@ -1,13 +1,14 @@
 {
-  "name": "slimconf",
-  "version": "0.11.0",
+  "name": "ensurism",
+  "version": "0.0.0",
   "author": "Rafa Mel",
-  "description": "A slim configuration util that fits both the thin and bulky",
+  "description": "A type validation and conditional assignment utility belt",
   "keywords": [
-    "config",
+    "ensure",
+    "coerce",
+    "assert",
     "configuration",
-    "environment",
-    "instance"
+    "environment"
   ],
   "engines": {
     "node": ">=12"
@@ -45,13 +46,13 @@
     "watch:test": "kpo watch:test --"
   },
   "license": "MIT",
-  "homepage": "https://github.com/rafamel/slimconf",
+  "homepage": "https://github.com/rafamel/ensurism",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rafamel/slimconf"
+    "url": "https://github.com/rafamel/ensurism"
   },
   "bugs": {
-    "url": "https://github.com/rafamel/slimconf/issues"
+    "url": "https://github.com/rafamel/ensurism/issues"
   },
   "devDependencies": {
     "@pika/pack": "^0.4.0",

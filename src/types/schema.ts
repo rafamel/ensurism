@@ -9,7 +9,23 @@ export interface Schema<T extends Type = Type> extends JSONSchema7 {
   examples?: SchemaType<T>;
   enum?: Array<SchemaType<T>>;
   const?: SchemaType<T>;
+  format?: SchemaFormat;
 }
+
+export type SchemaFormat =
+  | 'date-time'
+  | 'time'
+  | 'date'
+  | 'email'
+  | 'idn-email'
+  | 'hostname'
+  | 'idn-hostname'
+  | 'ipv4'
+  | 'ipv6'
+  | 'uri'
+  | 'uri-reference'
+  | 'iri'
+  | 'iri-reference';
 
 export type SchemaType<T extends Type = Type> = ExcludeNotDefined<
   ExcludeNotDefined<T> extends never ? Type : T

@@ -14,6 +14,18 @@
 
 [`npm install ensurism`](https://www.npmjs.com/package/ensurism)
 
+## Use Cases
+
+### General type validation
+
+### Environment variables
+
+### Configuration options
+
+## Utils
+
+## Collections
+
 <!--
 imperative, imperial, claim, dominant, insurance, ensure, sure, guard, cover, fend, covenant, accord, comply, conform, custom, customary, doctrine, canonical, despot, despotic, orthodox, treaty, autocrat, sanction, supreme, cardinal, monarch, emperor
 

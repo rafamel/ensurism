@@ -21,7 +21,10 @@ export interface CollectorFunctions {
   get(): Type;
   assert(): Assert<Type>;
   take(strategy: TakeStrategy): Take<Type>;
-  take<A extends boolean = false>(assert: A): Take<Type, A>;
+  take<A extends boolean = false>(
+    assert: A,
+    strategy: TakeStrategy
+  ): Take<Type, A>;
   ensure<D extends Type, E extends Type, N extends SchemaTypeName = never>(
     schema: EnsureSchema<any, D, E, N>
   ): CollectCollectorCallback<Type, Ensure<Type, D, E, N>>;

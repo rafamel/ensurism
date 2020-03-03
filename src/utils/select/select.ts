@@ -79,25 +79,28 @@ export function select(
     },
     (key) => {
       if (!Object.hasOwnProperty.call(selector, key)) {
-        return selector.default;
+        return [undefined, selector.default];
       }
       if (selector.default === undefined || key === 'default') {
-        return selector[key];
+        return [undefined, selector[key]];
       }
+      return [selector.default, selector[key]];
+    },
+    ([a, b]) => {
       switch (strategy) {
         case null:
         case undefined:
         case 'fallback': {
-          return selector[key];
+          return b;
         }
         case 'shallow': {
-          return shallow(selector.default, selector[key]);
+          return shallow(a, b);
         }
         case 'merge': {
-          return merge(selector.default, selector[key]);
+          return merge(a, b);
         }
         case 'deep': {
-          return deep(selector.default, selector[key]);
+          return deep(a, b);
         }
         default: {
           throw Error(`Invalid select strategy: ${strategy}`);

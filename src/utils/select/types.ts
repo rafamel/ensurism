@@ -18,8 +18,10 @@ export type Select<
 /* Input */
 export type SelectStrategy = 'fallback' | 'shallow' | 'merge' | 'deep';
 
-export type SelectSelector<T extends BasicType = BasicType, S = any> = S &
-  { [P in SelectSelectorValue<T>]?: Type | SelectSelectorCallback<Type> };
+export type SelectSelector<
+  T extends BasicType = BasicType,
+  S = Record<string, Type | SelectSelectorCallback<Type>>
+> = S & { [P in SelectSelectorValue<T>]?: Type | SelectSelectorCallback<Type> };
 
 export type SelectSelectorCallback<T> = () => T;
 

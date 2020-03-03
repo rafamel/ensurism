@@ -1,7 +1,8 @@
 import { Type } from '../../types';
+import { assert } from '../assert';
+import { take } from '../take';
 import { ensure } from '../ensure';
 import { coerce } from '../coerce';
-import { assert } from '../assert';
 import { select } from '../select';
 import { CollectorFunctions, Collect, CollectCollector } from './types';
 
@@ -11,6 +12,9 @@ const functions: CollectorFunctions = {
   },
   assert(): any {
     return (data: any) => assert(data);
+  },
+  take(a: any, b?: any): any {
+    return (data: any) => take(data, a, b);
   },
   ensure(a: any, b?: any): any {
     return (data: any) => ensure(data, a, b);

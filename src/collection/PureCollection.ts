@@ -21,7 +21,10 @@ import {
   EnsureSchema,
   Ensure,
   CoerceSchema,
-  Coerce
+  Coerce,
+  TakeStrategy,
+  Take,
+  take
 } from '../utils';
 import { PureCollectionDefine } from './types';
 import { CollectCollector, Collect } from '~/utils/collect/types';
@@ -60,6 +63,18 @@ export class PureCollection<T extends Record<string, any>> {
     deep?: D
   ): Assert<T[K], D> {
     return assert(this.get(property), deep);
+  }
+  public take<K extends keyof T>(
+    property: K,
+    strategy: TakeStrategy
+  ): Take<T[K]>;
+  public take<K extends keyof T, A extends boolean = false>(
+    property: K,
+    assert: A,
+    strategy: TakeStrategy
+  ): Take<T[K], A>;
+  public take<K extends keyof T>(property: K, a: any, b?: any): any {
+    return take(this.get(property), a, b);
   }
   public ensure<
     K extends keyof FilterRecordByType<T, Type>,

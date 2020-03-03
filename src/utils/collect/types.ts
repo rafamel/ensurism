@@ -3,6 +3,7 @@ import { Assert } from '../assert';
 import { SelectSelector, Select, SelectStrategy } from '../select';
 import { Ensure, EnsureSchema } from '../ensure';
 import { CoerceSchema, Coerce } from '../coerce';
+import { TakeStrategy, Take } from '../take';
 
 /* Output */
 export type Collect<O extends Record<string, any>> = {
@@ -19,6 +20,8 @@ export type CollectCollectorCallback<T extends Type, U> = (data: T) => U;
 export interface CollectorFunctions {
   get(): Type;
   assert(): Assert<Type>;
+  take(strategy: TakeStrategy): Take<Type>;
+  take<A extends boolean = false>(assert: A): Take<Type, A>;
   ensure<D extends Type, E extends Type, N extends SchemaTypeName = never>(
     schema: EnsureSchema<any, D, E, N>
   ): CollectCollectorCallback<Type, Ensure<Type, D, E, N>>;

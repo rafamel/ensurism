@@ -69,7 +69,7 @@ export function select(
           return String(value);
         }
         case 'object': {
-          if (value === 'null') return 'null';
+          if (value === null) return 'null';
         }
         // eslint-disable-next-line no-fallthrough
         default: {

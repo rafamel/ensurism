@@ -42,7 +42,7 @@ export function take(
           return data[0];
         }
         case 'maybe': {
-          for (const value in data) {
+          for (const value of data) {
             if (value !== undefined) return value;
           }
           return undefined;

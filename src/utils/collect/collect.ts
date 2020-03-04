@@ -30,11 +30,11 @@ const functions: CollectorFunctions = {
 export function collect<
   I extends Record<string, Type>,
   O extends Record<string, any>
->(record: I, collector: CollectCollector<I, O>): Collect<O> {
+>(data: I, collector: CollectCollector<I, O>): Collect<O> {
   const callbacks = collector(functions);
   const results: Partial<Collect<O>> = {};
   for (const key of Object.keys(callbacks) as Array<keyof O & keyof I>) {
-    results[key] = callbacks[key](record[key]);
+    results[key] = callbacks[key](data[key]);
   }
   return results as Collect<O>;
 }

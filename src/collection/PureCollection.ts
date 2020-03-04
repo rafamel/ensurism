@@ -26,18 +26,18 @@ import {
   Take,
   take
 } from '../utils';
-import { PureCollectionDefine } from './types';
+import { PureCollectionInitial } from './types';
 import { CollectCollector, Collect } from '~/utils/collect/types';
 
 const internal = Symbol('PureCollection');
 
 export class PureCollection<T extends Record<string, any>> {
-  private [internal]: { define: PureCollectionDefine<T>; value?: T };
-  public constructor(define: T | PureCollectionDefine<T>) {
+  private [internal]: { initial: PureCollectionInitial<T>; value?: T };
+  public constructor(initial: T | PureCollectionInitial<T>) {
     this[internal] = {
-      define: (typeof define === 'function'
-        ? define
-        : () => define) as PureCollectionDefine<T>
+      initial: (typeof initial === 'function'
+        ? initial
+        : () => initial) as PureCollectionInitial<T>
     };
   }
   public clear(): this {
@@ -51,7 +51,7 @@ export class PureCollection<T extends Record<string, any>> {
       return this[internal].value as T;
     }
 
-    const value = this[internal].define();
+    const value = this[internal].initial();
     this[internal].value = value;
     return value;
   }

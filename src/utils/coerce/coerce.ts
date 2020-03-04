@@ -55,9 +55,9 @@ export function coerce(
     case 'boolean':
     case 'null': {
       if (
-        data === '0' ||
         data === '' ||
         data === '""' ||
+        data === '0' ||
         data === 'false' ||
         data === 'null' ||
         data === 'undefined' ||

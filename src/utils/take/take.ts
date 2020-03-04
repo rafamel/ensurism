@@ -1,22 +1,23 @@
 import { pipeInto as into } from 'ts-functional-pipe';
 import { assert } from '../assert';
 import { TakeStrategy, Take } from './types';
+import { EmptyType } from '../../types';
 
 export function take<T>(data: T, strategy: TakeStrategy): Take<T>;
 export function take<T, A extends boolean = false>(
   data: T,
-  assert: A,
+  assert: A | EmptyType,
   strategy: TakeStrategy
 ): Take<T, A>;
 
 export function take(
   data: any,
-  a: TakeStrategy | boolean,
+  a: TakeStrategy | boolean | EmptyType,
   b?: TakeStrategy
 ): Take<any> {
   const args = {
-    assert: typeof a === 'boolean' ? a : false,
-    strategy: typeof a === 'boolean' ? b : a
+    assert: b ? (a as boolean | EmptyType) : false,
+    strategy: (b || a) as TakeStrategy
   };
 
   return into(

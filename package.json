@@ -2,7 +2,7 @@
   "name": "ensurism",
   "version": "0.0.0",
   "author": "Rafa Mel",
-  "description": "A type validation and conditional assignment utility belt",
+  "description": "A validation and conditional assignment utility belt",
   "keywords": [
     "ensure",
     "coerce",

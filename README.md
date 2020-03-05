@@ -184,8 +184,8 @@ ensure(undefined, true, 'string');
 Coerces `data` to a `schema` type, then validates the data against the `schema`, similarly to [`ensure`](#ensure).
 
 - Signatures:
-  - `coerce(data: string | undefined | null, schema: string | object)`
-  - `coerce(data: string | undefined | null, assert: boolean | null, schema: string | object)`
+  - `coerce(data: any, schema: string | object)`
+  - `coerce(data: any, assert: boolean | null, schema: string | object)`
 - Params:
   - `data`: the input data.
   - `assert`: whether to assert the final output value is not `undefined`.
@@ -245,11 +245,15 @@ coerce('foo', 'boolean'); // true
 coerce('null', 'boolean'); // false
 coerce('false', 'null'); // null
 coerce('{ "foo": "bar" }', 'object'); // { foo: 'bar' }
+coerce(10, 'boolean'); // true
+coerce(0, 'null'); // null
+
 
 // These will fail
 coerce('foo', 'number');
 coerce('foo', 'null');
 coerce('1, 2, 3', 'array');
+coerce(1, 'null');
 ```
 
 ### `select`

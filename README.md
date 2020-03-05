@@ -181,24 +181,58 @@ ensure(undefined, true, 'string');
 
 ### `coerce`
 
-Coerces a *string* to a `schema` type, then validates the data against the `schema`, similarly to [`ensure`](#ensure).
+Coerces `data` to a `schema` type, then validates the data against the `schema`, similarly to [`ensure`](#ensure).
 
 - Signatures:
   - `coerce(data: string | undefined | null, schema: string | object)`
   - `coerce(data: string | undefined | null, assert: boolean | null, schema: string | object)`
 - Params:
-  - `data`: the input *string* to be coerced.
+  - `data`: the input data.
   - `assert`: whether to assert the final output value is not `undefined`.
   - `schema`: either a *JSON Schema* with a `type` property, or a valid schema type, as a string.
 - Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
 
-The coercion rules are as follows for each `schema` type:
+The coercion rules from each `data` source types are as follows:
 
-- `"string"`: returns the input string with quotes (`"`) removed, if within quotes.
-- `"number"`, `"integer"`: parses with `Number` and throws if response is `Number.NaN`.
-- `"boolean"`: `false` for falsy value strings (`""`, `"\"\""`, `"0"`, `"false"`, `"null"`, `"undefined"`, `"NaN"`), otherwise `true`.
-- `"null"`: succeeds if a falsy value string; fails otherwise.
-- `"object"`, `"array"`: parses with `JSON.parse`.
+- *strings:*
+  - `"string"`: returns the input string with quotes (`"`) removed, if within quotes.
+  - `"number"`, `"integer"`: fails if not a number string.
+  - `"boolean"`: `false` for *falsy* value strings:
+    - `""`
+    - `"\"\""`
+    - `"0"`
+    - `"false"`
+    - `"null"`
+    - `"undefined"`
+    - `"NaN"`
+  - `"null"`: fails if not a *falsy* value string.
+  - `"array"`, `"object"`: parses with `JSON.parse`; fails if not a *JSON* string.
+- *numbers:*
+  - `"string"`: a number string.
+  - `"number"`, `"integer"`: a number.
+  - `"boolean"`: `false` for `0`, `true` otherwise.
+  - `"null"`: fails if not `0`.
+  - `"array"`, `"object"`: it will fail.
+- *boolean:*
+  - `"string"`: `"true"` or `"false"`.
+  - `"number"`, `"integer"`: `0` for `false`; `1` for `true`.
+  - `"boolean"`: same as data source.
+  - `"null"`: fails if not `false`.
+  - `"array"`, `"object"`: it will fail.
+- *null:*
+  - `"string"`: `"null"`.
+  - `"number"`, `"integer"`: `0`.
+  - `"boolean"`: `false`.
+  - `"null"`: `null`.
+  - `"array"`, `"object"`: it will fail.
+- *array:*
+  - `"string"`, `"number"`, `"integer"`, `"boolean"`, `"null"`: it will fail.
+  - `"array"`: same as data source.
+  - `"object"`: an object with index numbers as keys.
+- *object:*
+  - `"string"`, `"number"`, `"integer"`, `"boolean"`, `"null"`: it will fail.
+  - `"array"`: an array of object values.
+  - `"object"`: same as data source.
 
 ```javascript
 import { coerce } from 'ensurism';

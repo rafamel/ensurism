@@ -38,8 +38,8 @@ export interface CollectorFunctions {
     schema: EnsureSchema<any, D, E, N>
   ): CollectCollectorCallback<Type, Ensure<Type, D, E, N, A>>;
   coerce<D extends Type, E extends Type, N extends SchemaTypeName>(
-    schema: CoerceSchema<any, D, E, N>
-  ): CollectCollectorCallback<Type, Coerce<string | EmptyType, D, E, N>>;
+    schema: CoerceSchema<D, E, N>
+  ): CollectCollectorCallback<Type, Coerce<D, E, N>>;
   coerce<
     D extends Type,
     E extends Type,
@@ -47,8 +47,8 @@ export interface CollectorFunctions {
     A extends boolean = false
   >(
     assert: A | EmptyType,
-    schema: CoerceSchema<any, D, E, N>
-  ): CollectCollectorCallback<Type, Coerce<string | EmptyType, D, E, N, A>>;
+    schema: CoerceSchema<D, E, N>
+  ): CollectCollectorCallback<Type, Coerce<D, E, N, A>>;
   select<S extends SelectSelector>(
     selector: SelectSelector<BasicType, S>
   ): CollectCollectorCallback<Type, Select<S>>;

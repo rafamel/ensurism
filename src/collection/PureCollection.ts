@@ -73,7 +73,7 @@ export class PureCollection<T extends Record<string, any>> {
     assert: A,
     strategy: TakeStrategy
   ): Take<T[K], A>;
-  public take<K extends keyof T>(property: K, a: any, b?: any): any {
+  public take(property: keyof T, a: any, b?: any): any {
     return take(this.get(property), a, b);
   }
   public ensure<
@@ -93,27 +93,24 @@ export class PureCollection<T extends Record<string, any>> {
     assert: A | EmptyType,
     schema: EnsureSchema<T[K], D, E, N>
   ): Ensure<T[K], D, E, N, A>;
-  public ensure<K extends keyof T>(property: K, a: any, b?: any): any {
+  public ensure(property: keyof T, a: any, b?: any): any {
     return ensure(this.get(property), a, b);
   }
+  public coerce<D extends Type, E extends Type, N extends SchemaTypeName>(
+    property: keyof FilterRecordByType<T, Type>,
+    schema: CoerceSchema<D, E, N>
+  ): Coerce<D, E, N>;
   public coerce<
-    K extends keyof FilterRecordByType<T, string | EmptyType>,
-    D extends Type,
-    E extends Type,
-    N extends SchemaTypeName
-  >(property: K, schema: CoerceSchema<T[K], D, E, N>): Coerce<T[K], D, E, N>;
-  public coerce<
-    K extends keyof FilterRecordByType<T, string | EmptyType>,
     D extends Type,
     E extends Type,
     N extends SchemaTypeName,
     A extends boolean = false
   >(
-    property: K,
+    property: keyof FilterRecordByType<T, Type>,
     assert: A | EmptyType,
-    schema: CoerceSchema<T[K], D, E, N>
-  ): Coerce<T[K], D, E, N, A>;
-  public coerce<K extends keyof T>(property: K, a: any, b?: any): any {
+    schema: CoerceSchema<D, E, N>
+  ): Coerce<D, E, N, A>;
+  public coerce(property: keyof T, a: any, b?: any): any {
     return coerce(this.get(property) as any, a, b);
   }
   public select<
@@ -152,7 +149,7 @@ export class PureCollection<T extends Record<string, any>> {
     strategy: G | EmptyType,
     selector: SelectSelector<FilterByType<T[K], BasicType>, S>
   ): Select<S, A, G>;
-  public select<K extends keyof T>(property: K, a: any, b?: any, c?: any): any {
+  public select(property: keyof T, a: any, b?: any, c?: any): any {
     return select(this.get(property) as any, a, b, c);
   }
   public collect<O extends Record<string, any>>(

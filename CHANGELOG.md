@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/rafamel/ensurism/compare/v0.2.0...v0.2.1) (2020-03-05)
+
+
+### Bug Fixes
+
+* **utils:** fixes collect implementation and types ([7c7fd44](https://github.com/rafamel/ensurism/commit/7c7fd4498078fbec9e8ad0c385d0943f054183a1))
+
+
+
 # [0.2.0](https://github.com/rafamel/ensurism/compare/v0.1.0...v0.2.0) (2020-03-05)
 
 

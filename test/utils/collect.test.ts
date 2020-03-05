@@ -25,6 +25,7 @@ test(`calls utils and returns values`, () => {
       f: 'barbaz'
     },
     ({ get, assert, take, ensure, coerce, select }) => ({
+      item: 'value',
       a: get(),
       b: assert(),
       c: take('c0arg' as any, 'c1arg' as any),
@@ -35,6 +36,7 @@ test(`calls utils and returns values`, () => {
   );
 
   expect(result).toEqual({
+    item: 'value',
     a: 'foo',
     b: { assert: 'bar' },
     c: { take: 'baz' },

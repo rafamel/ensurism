@@ -11,9 +11,7 @@ export type Collect<O extends Record<string, any>> = {
 };
 
 /* Input */
-export type CollectCollector<I extends Record<string, Type>, O = any> = (
-  fn: CollectorFunctions
-) => O & { [P in keyof I]?: Type | CollectCollectorCallback<Type, any> };
+export type CollectCollector<O> = (fn: CollectorFunctions) => O;
 
 export type CollectCollectorCallback<T extends Type, U> = (data: T) => U;
 

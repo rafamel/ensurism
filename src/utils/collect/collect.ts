@@ -27,14 +27,15 @@ const functions: CollectorFunctions = {
   }
 };
 
-export function collect<
-  I extends Record<string, Type>,
-  O extends Record<string, any>
->(data: I, collector: CollectCollector<I, O>): Collect<O> {
-  const callbacks = collector(functions);
+export function collect<I extends Record<string, Type>, O>(
+  data: I,
+  collector: CollectCollector<O>
+): Collect<O> {
+  const response = collector(functions);
   const results: Partial<Collect<O>> = {};
-  for (const key of Object.keys(callbacks) as Array<keyof O & keyof I>) {
-    results[key] = callbacks[key](data[key]);
+  for (const key of Object.keys(response) as Array<keyof O & keyof I>) {
+    const value = response[key];
+    results[key] = typeof value === 'function' ? value(data[key]) : value;
   }
   return results as Collect<O>;
 }

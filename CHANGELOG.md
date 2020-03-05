@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/rafamel/ensurism/compare/v0.1.0...v0.2.0) (2020-03-05)
+
+
+### Features
+
+* coerce takes Type as data ([22c9611](https://github.com/rafamel/ensurism/commit/22c9611ae988a06fe42107ee0b660639a73ebe87))
+
+
+
 # 0.1.0 (2020-03-04)
 
 

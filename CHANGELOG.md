@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/rafamel/ensurism/compare/v0.2.2...v0.3.0) (2020-03-24)
+
+
+### Features
+
+* collect fails with all error messages and information about their key ([48a519c](https://github.com/rafamel/ensurism/commit/48a519cb0bb122fa403db121a54eb32983eafc58))
+
+
+
 ## [0.2.2](https://github.com/rafamel/ensurism/compare/v0.2.1...v0.2.2) (2020-03-05)
 
 

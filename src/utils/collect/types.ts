@@ -11,6 +11,10 @@ export type Collect<O extends Record<string, any>> = {
 };
 
 /* Input */
+export interface CollectOptions {
+  failEarly: boolean;
+}
+
 export type CollectCollector<O> = (fn: CollectorFunctions) => O;
 
 export type CollectCollectorCallback<T extends Type, U> = (data: T) => U;

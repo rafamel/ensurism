@@ -26,7 +26,8 @@ import {
   Take,
   take,
   CollectCollector,
-  Collect
+  Collect,
+  CollectOptions
 } from '../utils';
 import { PureCollectionInitial } from './types';
 
@@ -153,12 +154,18 @@ export class PureCollection<T extends Record<string, any>> {
   public select(property: keyof T, a: any, b?: any, c?: any): any {
     return select(this.get(property) as any, a, b, c);
   }
-  public collect<O>(collector: CollectCollector<O>): Collect<O> {
+  public collect<O>(collector: CollectCollector<O>): Collect<O>;
+  public collect<O>(
+    options: CollectOptions,
+    collector: CollectCollector<O>
+  ): Collect<O>;
+  public collect(a: any, b?: any): any {
     return collect(
       Object.entries(this.all()).reduce((acc, [key, value]) => {
         return isType(value) ? Object.assign(acc, { [key]: value }) : acc;
       }, {}),
-      collector
+      a,
+      b
     );
   }
 }

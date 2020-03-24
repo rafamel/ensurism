@@ -137,9 +137,9 @@ test(`PureCollection.collect`, () => {
   }));
   const collection = new PureCollection({ foo: 'foo' });
 
-  expect(collection.collect('arg0' as any)).toEqual({
+  expect(collection.collect('arg0' as any, 'arg1' as any)).toEqual({
     collect: true
   });
   expect(mocks.collection.all).toHaveBeenCalled();
-  expect(mocks.utils.collect).toHaveBeenCalledWith(data, 'arg0');
+  expect(mocks.utils.collect).toHaveBeenCalledWith(data, 'arg0', 'arg1');
 });

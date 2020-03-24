@@ -295,8 +295,11 @@ A conveniency function for when want to use any of the previous utils for severa
 
 - Signatures:
   - `collect(data: object, collector: (functions: object) => object)`
+  - `collect(data: object, options: object, collector: (functions: object) => object)`
 - Params:
-  - `record`: an object of values.
+  - `data`: an object of values.
+  - `options`: an options object, with keys:
+    - `failEarly`: *boolean*, whether to fail as soon as one of the values throw, otherwise compacting all errors in a single error. Default: `false`.
   - `collector`: a function taking in `functions`, and object with methods: `get`, `assert`, `take`, `ensure`, `coerce`, and `select`, with similar signatures as the exported utils, but omitting their first `data` param.
 - Returns: an object as defined by `collector`.
 
@@ -452,7 +455,7 @@ new PureCollection({ foo: 'bar', bar: 'baz' }).select('foo', {
 
 #### `PureCollection.collect`
 
-Similar to [`collect`](#collect), but taking a collection's property key as the first argument instead of the data.
+Similar to [`collect`](#collect), but without its first `data` argument.
 
 ```javascript
 import { PureCollection } from 'ensurism';

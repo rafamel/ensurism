@@ -2,7 +2,7 @@ import { Type, SchemaTypeName, EmptyType, Schema } from '../../types';
 import { getPositionalAssertSchema } from '../../helpers/get-positional';
 import { ensure } from '../ensure';
 import { CoerceSchema, Coerce } from './types';
-import { pipeInto as into } from 'ts-functional-pipe';
+import { into } from 'pipettes';
 
 export function coerce<
   D extends Type,

@@ -1,6 +1,6 @@
 import { BasicType, EmptyType } from '../../types';
 import { shallow, merge, deep } from 'merge-strategies';
-import { pipeInto as into } from 'ts-functional-pipe';
+import { into } from 'pipettes';
 import { assert } from '../assert';
 import { SelectSelector, Select, SelectStrategy } from './types';
 
@@ -57,7 +57,6 @@ export function select(
   };
 
   return into(
-    null,
     () => {
       switch (typeof value) {
         case 'undefined': {
@@ -77,7 +76,9 @@ export function select(
         }
       }
     },
-    (key) => {
+    (fn) => {
+      const key = fn();
+
       if (!Object.hasOwnProperty.call(selector, key)) {
         return [undefined, selector.default];
       }

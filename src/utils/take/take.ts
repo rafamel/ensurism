@@ -1,4 +1,4 @@
-import { pipeInto as into } from 'ts-functional-pipe';
+import { into } from 'pipettes';
 import { assert } from '../assert';
 import { TakeStrategy, Take } from './types';
 import { EmptyType } from '../../types';
@@ -21,7 +21,6 @@ export function take(
   };
 
   return into(
-    null,
     () => {
       if (!Array.isArray(data)) return data;
 
@@ -46,6 +45,9 @@ export function take(
         }
       }
     },
-    (value) => (args.assert ? assert(value) : value)
+    (fn) => {
+      const value = fn();
+      return args.assert ? assert(value) : value;
+    }
   );
 }

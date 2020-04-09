@@ -60,9 +60,9 @@
     "@pika/plugin-standard-pkg": "^0.9.2",
     "@riseup/library": "^0.5.0",
     "@riseup/tooling": "^0.5.0",
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^25.2.1",
     "@types/lodash.clonedeep": "^4.5.6",
-    "@zerollup/ts-transform-paths": "^1.7.13",
+    "@zerollup/ts-transform-paths": "^1.7.17",
     "coveralls": "^3.0.11",
     "husky": "^4.2.3",
     "kpo": "^0.11.1",
@@ -74,7 +74,7 @@
     "ajv": "^6.12.0",
     "lodash.clonedeep": "^4.5.0",
     "merge-strategies": "^0.1.6",
-    "ts-functional-pipe": "^2.0.0"
+    "ts-functional-pipe": "^2.1.1"
   },
   "husky": {
     "hooks": {

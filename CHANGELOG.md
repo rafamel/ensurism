@@ -1,3 +1,13 @@
+## [0.3.1](https://github.com/rafamel/ensurism/compare/v0.3.0...v0.3.1) (2020-04-09)
+
+
+### Bug Fixes
+
+* fixes objects causing type errors due to narrow definitions ([015fb51](https://github.com/rafamel/ensurism/commit/015fb51b24186c62906472b740a7edc8a66afb8c))
+* **deps:** updates dependencies ([4996644](https://github.com/rafamel/ensurism/commit/4996644fde94d6c1d9384b89a05318228fd1472a))
+
+
+
 # [0.3.0](https://github.com/rafamel/ensurism/compare/v0.2.2...v0.3.0) (2020-03-24)
 
 

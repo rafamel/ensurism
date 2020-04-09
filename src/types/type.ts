@@ -14,4 +14,6 @@ export type NotDefinedType = undefined | void;
 export type DefinedType = BasicDefinedType | Type[] | ObjectType;
 
 /* Elements */
-export type ObjectType = { [key: string]: Type };
+// Object is defined broadly as otherwise it
+// will cause type errors on correct types.
+export type ObjectType = object;

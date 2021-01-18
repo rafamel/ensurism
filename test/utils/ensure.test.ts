@@ -6,7 +6,7 @@ describe(`preconditions`, () => {
     expect(() =>
       ensure('foo', 'bar' as any)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Schema is not valid: data.type should be equal to one of the allowed values, data.type should be array, data.type should match some schema in anyOf"`
+      `"Schema is not valid: data/type should be equal to one of the allowed values, data/type should be array, data/type should match some schema in anyOf"`
     );
   });
 });

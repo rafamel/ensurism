@@ -64,10 +64,10 @@ export function ensure<
     ajv.errors.map((error) => {
       return {
         ...error,
-        dataPath: error.dataPath.replace(/^\.data/, ''),
+        dataPath: error.dataPath.replace(/^\/data/, ''),
         schemaPath: error.schemaPath.replace(/^#\/properties\/data/, '/#'),
         message: (error.message || 'is not valid').replace(
-          /should have required property '\.?data'/,
+          /should have required property '\/?data'/,
           'should not be undefined'
         )
       };

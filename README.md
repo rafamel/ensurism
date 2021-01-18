@@ -16,20 +16,17 @@
 
 ## Contents
 
-- [Use Cases](#use-cases)
-  - [Validation](#validation)
-  - [Environment Variables](#environment-variables)
-  - [Global Configuration](#global-configuration)
-- [Utils](#utils)
-  - [`assert`](#assert)
-  - [`take`](#take)
-  - [`ensure`](#ensure)
-  - [`coerce`](#coerce)
-  - [`select`](#select)
-  - [`collect`](#collect)
-- [Collections](#collections)
-  - [`PureCollection`](#purecollection)
-  - [`Collection`](#collection)
+* [Use Cases](#use-cases)
+  * [Validation](#validation)
+  * [Environment Variables](#environment-variables)
+  * [Global Configuration](#global-configuration)
+* [Utils](#utils)
+  * [`assert`](#assert)
+  * [`take`](#take)
+  * [`ensure`](#ensure)
+  * [`coerce`](#coerce)
+  * [`select`](#select)
+  * [`collect`](#collect)
 
 ## Use Cases
 
@@ -39,20 +36,18 @@ The most general util for validation is [`ensure`](#ensure); however, be sure to
 
 ### Environment Variables
 
-The library exports a [`PureCollection`](#PureCollection) instantiated with `process.env`, for conveniency:
-
-```javascript
-import { env } from 'ensurism';
+```typescript
+import { ensure, collect } from 'ensurism';
 
 // Will always be 'development', 'production', or 'test'
-const nodeEnv = env.ensure('NODE_ENV', {
+const NODE_ENV = ensure(process.env.NODE_ENV, {
   type: 'string',
   enum: ['development', 'production', 'test'],
   default: 'development'
 });
 
 // Collecting -mapping- properties
-const environment = env.collect(({ get, assert, ensure, coerce }) => ({
+const env = collect(process.env, ({ get, assert, ensure, coerce }) => ({
   FOO_VAR: get(),
   BAR_VAR: assert(),
   APP_URI: ensure({ type: 'string', format: 'uri' }),
@@ -67,36 +62,35 @@ const environment = env.collect(({ get, assert, ensure, coerce }) => ({
 
 ### Global Configuration
 
-You might want to create a configuration object that relies on certain values. In the example below, we instantiate a [`Collection`](#collection) that uses an object with an `nodeEnv` property, while providing its default value through `process.env.NODE_ENV`. Depending on the value of this property, we're using [`select`](#select) to conditionally set the properties `bar` and `baz` for our final configuration object.
+You might want to create a configuration object that relies on certain values. In the example below, we [`collect`](#collect) environment variables, and later use [`select`](#select) to conditionally set the properties `bar` and `baz` for our final configuration object.
 
-```javascript
-import { env, Collection } from 'ensurism';
+```typescript
+import { into } from 'pipettes';
+import { collect, select } from 'ensurism';
 
-export const collection = new Collection(
-  {
-    nodeEnv: env.ensure('NODE_ENV', {
+export const configuration = into(
+  collect(process.env, ({ ensure }) => ({
+    NODE_ENV: ensure({
       type: 'string',
       enum: ['development', 'production', 'test'],
       default: 'development'
     })
-  },
-  (vars) => ({
-    env: vars.get('nodeEnv'),
+  })),
+  ({ NODE_ENV }) => ({
+    env: NODE_ENV,
     foo: 'foo',
-    bar: vars.select('nodeEnv', {
+    bar: select(NODE_ENV, {
       default: 1,
       production: 2,
       development: 3
     }),
-    baz: vars.select('nodeEnv', {
+    baz: select(NODE_ENV, {
       default: 1,
       production: 2,
       test: 4
     })
   })
 );
-
-export const config = collection.all();
 ```
 
 ## Utils
@@ -105,136 +99,133 @@ export const config = collection.all();
 
 Throws if `data` is `undefined`.
 
-- Signatures:
-  - `assert(data: any, deep?: boolean)`
-- Params:
-  - `data`: the input data.
-  - `deep`: if it is `true` and data is an array or a record, `assert` will also throw if any of their elements are `undefined`.
-- Returns: the input `data`.
+* Signature: `assert(data, options)`
+* Params:
+  * `data`: the input data.
+  * `options`: *optional* object with optional properties:
+    * `deep`: if `true` and `data` is an array or a record, `assert` will also throw if any of their elements are `undefined`.
+* Returns: the input `data`.
 
-```javascript
+```typescript
 import { assert } from 'ensurism';
 
-// These will succeed
+// Succeed
 assert('foo');
-assert(['foo'], true);
+assert([undefined]);
 
-// These will fail
+// Fail
 assert(undefined);
-assert([undefined], true);
+assert([undefined], { deep: true });
 ```
 
 ### `take`
 
 Returns the input `data` for records and basic types; for arrays, however, one of multiple strategies can be applied:
 
-- Signatures:
-  - `take(data: any, strategy: string)`
-  - `take(data: any, assert: boolean | null, strategy: string)`
-- Params:
-  - `data`: the input data.
-  - `assert`: whether to assert the final output value is not `undefined`.
-  - `strategy`: applied to `data` arrays; one of:
-    - `"one"`: it will throw if the input array has more than one element, and return its first item, if any.
-    - `"first"`: it will return the first array item, if any.
-    - `"maybe"`: it will return the first **defined** array item, if any.
-- Returns: the input `data` if it is a record or a basic type; if `data` is an array, it will return a `data` array value as per the specified `strategy`.
+* Signature: `take(data, options)`
+* Params:
+  * `data`: the input data.
+  * `options`: *optional* object with optional properties:
+    * `assert`: whether to assert the final output value is not `undefined`.
+    * `strategy`: applies to `data` arrays; one of:
+      * `"first"`: it will return the first array item, if any. This is the **default** strategy.
+      * `"one"`: it will throw if the input array has more than one element, and return its first item, if any.
+      * `"maybe"`: it will return the first **defined** array item, if any.
+* Returns: the input `data` if it is a record or a basic type; if `data` is an array, it will return a `data` array value as per the specified `strategy`.
 
-```javascript
+```typescript
 import { take } from 'ensurism';
 
-// These will succeed
-take(['foo'], 'one'); // 'foo'
-take(['foo', 'bar'], 'first'); // 'foo'
-take([undefined, 'foo'], 'maybe'); // 'foo'
+// Succeed
+take(['foo'], { strategy: 'one' }); // 'foo'
+take(['foo', 'bar'], { strategy: 'first' }); // 'foo'
+take([undefined, 'foo'], { strategy: 'maybe' }); // 'foo'
 
-// These will fail
-take(['foo', 'bar'], 'one');
-take([undefined], true, 'first');
+// Fail
+take(['foo', 'bar'], { strategy: 'one' });
+take([undefined], { assert: true, strategy: 'first' });
 ```
 
 ### `ensure`
 
 Throws if `data` doesn't conform to a given `schema`. If the `schema` has `default`s, they will be assigned to the returned data.
 
-- Signatures:
-  - `ensure(data: any, schema: string | object)`
-  - `ensure(data: any, assert: boolean | null, schema: string | object)`
-- Params:
-  - `data`: the input data.
-  - `assert`: whether to assert the final output value is not `undefined`.
-  - `schema`: either a *JSON Schema* with a `type` property, or a valid schema type, as a string.
-- Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
+* Signature: `ensure(data, schema, options)`
+* Params:
+  * `data`: the input data.
+  * `schema`: either a *JSON Schema object* with a `type` property, or a valid schema type, as a *string*.
+  * `options`: *optional* object with optional properties:
+    * `assert`: whether to assert the final output value is not `undefined`.
+* Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
 
-```javascript
+```typescript
 import { ensure } from 'ensurism';
 
-// These will succeed
+// Succeed
 ensure('foo', 'string'); // 'foo'
 ensure(undefined, 'string'); // undefined
-ensure(undefined, true, { type: 'string', default: 'foo' }); // 'foo'
+ensure(undefined, { type: 'string', default: 'foo' }, { assert: true }); // 'foo'
 
-// These will fail
+// Fail
 ensure('foo', 'number');
-ensure(undefined, true, 'string');
+ensure(undefined, 'string', { assert: true });
 ```
 
 ### `coerce`
 
 Coerces `data` to a `schema` type, then validates the data against the `schema`, similarly to [`ensure`](#ensure).
 
-- Signatures:
-  - `coerce(data: any, schema: string | object)`
-  - `coerce(data: any, assert: boolean | null, schema: string | object)`
-- Params:
-  - `data`: the input data.
-  - `assert`: whether to assert the final output value is not `undefined`.
-  - `schema`: either a *JSON Schema* with a `type` property, or a valid schema type, as a string.
-- Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
+* Signature: `coerce(data, schema, options)`
+* Params:
+  * `data`: the input data.
+  * `schema`: either a *JSON Schema object* with a `type` property, or a valid schema type, as a *string*.
+  * `options`: *optional* object with optional properties:
+    * `assert`: whether to assert the final output value is not `undefined`.
+* Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
 
-The coercion rules from each `data` source types are as follows:
+The coercion rules from each `data` input type are as follows:
 
-- *strings:*
-  - `"string"`: returns the input string with quotes (`"`) removed, if within quotes.
-  - `"number"`, `"integer"`: fails if not a number string.
-  - `"boolean"`: `false` for *falsy* value strings:
-    - `""`
-    - `"\"\""`
-    - `"0"`
-    - `"false"`
-    - `"null"`
-    - `"undefined"`
-    - `"NaN"`
-  - `"null"`: fails if not a *falsy* value string.
-  - `"array"`, `"object"`: parses with `JSON.parse`; fails if not a *JSON* string.
-- *numbers:*
-  - `"string"`: a number string.
-  - `"number"`, `"integer"`: a number.
-  - `"boolean"`: `false` for `0`, `true` otherwise.
-  - `"null"`: fails if not `0`.
-  - `"array"`, `"object"`: it will fail.
-- *boolean:*
-  - `"string"`: `"true"` or `"false"`.
-  - `"number"`, `"integer"`: `0` for `false`; `1` for `true`.
-  - `"boolean"`: same as data source.
-  - `"null"`: fails if not `false`.
-  - `"array"`, `"object"`: it will fail.
-- *null:*
-  - `"string"`: `"null"`.
-  - `"number"`, `"integer"`: `0`.
-  - `"boolean"`: `false`.
-  - `"null"`: `null`.
-  - `"array"`, `"object"`: it will fail.
-- *array:*
-  - `"string"`, `"number"`, `"integer"`, `"boolean"`, `"null"`: it will fail.
-  - `"array"`: same as data source.
-  - `"object"`: an object with index numbers as keys.
-- *object:*
-  - `"string"`, `"number"`, `"integer"`, `"boolean"`, `"null"`: it will fail.
-  - `"array"`: an array of object values.
-  - `"object"`: same as data source.
+* *strings:*
+  * `"string"`: returns the input string with quotes (`"`) removed, if within quotes.
+  * `"number"`, `"integer"`: fails if `NaN`.
+  * `"boolean"`: `false` for *falsy* value strings:
+    * `""`
+    * `"\"\""`
+    * `"0"`
+    * `"false"`
+    * `"null"`
+    * `"undefined"`
+    * `"NaN"`
+  * `"null"`: fails if not a *falsy* value string.
+  * `"array"`, `"object"`: parses with `JSON.parse`; fails if not a *JSON* string.
+* *numbers:*
+  * `"string"`: a number string.
+  * `"number"`, `"integer"`: a number.
+  * `"boolean"`: `false` for `0`, `true` otherwise.
+  * `"null"`: fails if not `0`.
+  * `"array"`, `"object"`: it will fail.
+* *boolean:*
+  * `"string"`: `"true"` or `"false"`.
+  * `"number"`, `"integer"`: `0` for `false`; `1` for `true`.
+  * `"boolean"`: same as data source.
+  * `"null"`: fails if not `false`.
+  * `"array"`, `"object"`: it will fail.
+* *null:*
+  * `"string"`: `"null"`.
+  * `"number"`, `"integer"`: `0`.
+  * `"boolean"`: `false`.
+  * `"null"`: `null`.
+  * `"array"`, `"object"`: it will fail.
+* *array:*
+  * `"string"`, `"number"`, `"integer"`, `"boolean"`, `"null"`: it will fail.
+  * `"array"`: same as data source.
+  * `"object"`: an object with index numbers as keys.
+* *object:*
+  * `"string"`, `"number"`, `"integer"`, `"boolean"`, `"null"`: it will fail.
+  * `"array"`: an array of object values.
+  * `"object"`: same as data source.
 
-```javascript
+```typescript
 import { coerce } from 'ensurism';
 
 // These will succeed
@@ -258,52 +249,47 @@ coerce(1, 'null');
 
 ### `select`
 
-Given a `value` and a `selector` *object*, it will return the value of the `selector`'s property matching `value`. If `selector` doesn't have such property but it does have a `default` key, it will return its value instead.
+Given a value and a `selector` *object*, it will return the value of the `selector`'s property matching that value. If `selector` doesn't have such property but it does have a `default` key, it will return its value instead.
 
 If a `strategy` other than `"fallback"` is specified, the selected value -if any- will be merged with the `default` value -if any- following the specified strategy.
 
-- Signatures:
-  - `select(value: string | number | boolean | null | undefined, selector: object)`
-  - `select(value: string | number | boolean | null | undefined, assert: boolean | null, selector: object)`
-  - `select(value: string | number | boolean | null | undefined, strategy: string | null, selector: object)`
-  - `select(value: string | number | boolean | null | undefined, assert: boolean | null, strategy: string | null, selector: object)`
-- Params:
-  - `value`: property to select from `selector`.
-  - `assert`: whether to assert the final output value is not `undefined`.
-  - `strategy`: applied when there's both a `selector.default` and data for `value` -see [merge strategies](https://github.com/rafamel/utils/tree/master/packages/merge-strategies); one of:
-    - `"fallback"`: returns the data for `selector[value]` if available, otherwise returns `selector.default`; applied by default if no `strategy` is specified.
-    - `"shallow"`: produces a shallow merge clone of the data.
-    - `"merge"`: produces a deep merge clone of the data, excluding *arrays*.
-    - `"deep"`: produces a deep merge clone of the data, including *arrays*.
-  - `selector`: and object of values.
+* Signature: `select(data, selector, options)`
+* Params:
+  * `data`: property to select from `selector`.
+  * `selector`: and object of values.
+  * `options`: *optional* object with optional properties:
+    * `assert`: whether to assert the final output value is not `undefined`.
+    * `strategy`: applied when there's both a `selector.default` and data for `value` -see [merge strategies](https://github.com/rafamel/utils/tree/master/packages/merge-strategies); one of:
+      * `"fallback"`: returns the data for `selector[value]` if available, otherwise returns `selector.default`. This is the **default** strategy.
+      * `"shallow"`: produces a shallow merge clone of the data.
+      * `"merge"`: produces a deep merge clone of the data, excluding *arrays*.
+      * `"deep"`: produces a deep merge clone of the data, including *arrays*.
 
-```javascript
+```typescript
 import { select } from 'ensurism';
 
 // These will succeed
 select('foo', { foo: 'bar', bar: 'baz' }); // 'bar'
 select('foo', { default: 'bar', bar: 'baz' }); // 'bar'
-select('foo', 'shallow', { default: { bar: 'bar' }, foo: { baz: 'baz' } }); // { bar: 'bar', baz: 'baz' }
+select('foo', { default: { bar: 'bar' }, foo: { baz: 'baz' } }, { strategy: 'shallow' }); // { bar: 'bar', baz: 'baz' }
 
 // These will fail
-select('foo', true, { bar: 'baz' });
+select('foo', { bar: 'baz' }, { assert: true });
 ```
 
 ### `collect`
 
-A conveniency function for when want to use any of the previous utils for several keys in an object, and expect the response to contain similarly named properties.
+A conveniency function for when you want to use any of the previous utils for several keys in an object, and expect the response to contain similarly named properties.
 
-- Signatures:
-  - `collect(data: object, collector: (functions: object) => object)`
-  - `collect(data: object, options: object, collector: (functions: object) => object)`
-- Params:
-  - `data`: an object of values.
-  - `options`: an options object, with keys:
-    - `failEarly`: *boolean*, whether to fail as soon as one of the values throw, otherwise compacting all errors in a single error. Default: `false`.
-  - `collector`: a function taking in `functions`, and object with methods: `get`, `assert`, `take`, `ensure`, `coerce`, and `select`, with similar signatures as the exported utils, but omitting their first `data` param.
-- Returns: an object as defined by `collector`.
+* Signature:`collect(data, collection, options)`
+* Params:
+  * `data`: an object of values.
+  * `collector`: a function, taking an object with methods `get`, `assert`, `take`, `ensure`, `coerce`, and `select` as an argument. These methods have the same signature as the similarly named functions but omitting their first `data` argument.
+  * `options`: *optional* object with optional properties:
+    * `failEarly`: *boolean*, whether to fail as soon as one of the values throw, otherwise compacting all errors in a single error. Default: `false`.
+* Returns: an object as defined by `collector`.
 
-```javascript
+```typescript
 import { collect } from 'ensurism';
 
 const result = collect(
@@ -337,195 +323,4 @@ const result = collect(
   e: true,
   f: false
 });
-```
-
-## Collections
-
-### `PureCollection`
-
-A `PureCollection` is simply a conveniency class for running [`utils`](#utils) over an object's properties.
-
-Optionally, it can take an object returning function, which will run once only after some or all properties are accessed.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-new PureCollection({ foo: 'bar', bar: 'baz' });
-
-new PureCollection(() => ({ foo: 'bar', bar: 'baz' }));
-```
-
-#### `PureCollection.clear`
-
-Clears the result of the initialization function call, so it will be called again on the next property access. If the `PureCollection` was instantiated with an object, it won't have any effect.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-const collection = new PureCollection(() => {
-  console.log('RUN');
-  return { foo: 'bar', bar: 'baz' };
-});
-
-collection.get('foo');
-collection.all(); // RUN
-collection.clear();
-collection.all(); // RUN
-```
-
-#### `PureCollection.all`
-
-Retrieves the data object.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: { foo: 'bar', bar: 'baz' }
-new PureCollection({ foo: 'bar', bar: 'baz' })..all();
-```
-
-#### `PureCollection.get`
-
-Retrieves the data object.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: 'bar'
-new PureCollection({ foo: 'bar', bar: 'baz' }).get('foo');
-```
-
-#### `PureCollection.assert`
-
-Similar to [`assert`](#assert), but taking in a collection's property key as the first argument instead of the data.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: 'bar'
-new PureCollection({ foo: 'bar', bar: 'baz' }).assert('foo');
-```
-
-#### `PureCollection.take`
-
-Similar to [`take`](#take), but taking a collection's property key as the first argument instead of the data.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: 'bar'
-new PureCollection({ foo: ['bar'], bar: 'baz' }).take('foo', 'one');
-```
-
-#### `PureCollection.ensure`
-
-Similar to [`ensure`](#ensure), but taking a collection's property key as the first argument instead of the data.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: 'bar'
-new PureCollection({ foo: 'bar', bar: 'baz' }).ensure('foo', 'string');
-```
-
-#### `PureCollection.coerce`
-
-Similar to [`coerce`](#coerce), but taking a collection's property key as the first argument instead of the data.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: true
-new PureCollection({ foo: 'bar', bar: 'baz' }).coerce('foo', 'boolean');
-```
-
-#### `PureCollection.select`
-
-Similar to [`select`](#select), but taking a collection's property key as the first argument instead of the data.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: 'barbaz'
-new PureCollection({ foo: 'bar', bar: 'baz' }).select('foo', {
-  foo: 'foobar',
-  bar: 'barbaz'
-});
-```
-
-#### `PureCollection.collect`
-
-Similar to [`collect`](#collect), but without its first `data` argument.
-
-```javascript
-import { PureCollection } from 'ensurism';
-
-// Returns: { foo: 'bar' }
-new PureCollection({ foo: 'bar', bar: 'baz' }).collect(({ assert }) => ({
-  foo: assert(),
-}));
-```
-
-### `Collection`
-
-Inherits from [`PureCollection`,](#purecollection) but takes in an additional object of variables that the initialization function will take in as a `PureCollection`.
-
-```javascript
-import { Collection } from 'ensurism';
-
-const collection = new Collection({
-  foo: 'bar',
-  bar: 'baz'
-}, (vars) => ({
-  foobar: vars.get('foo') === 'bar' ? 'foobar' : 'foobaz',
-  foobaz: vars.ensure('bar', 'string')
-}));
-
-// Returns: { foobar: 'foobar', foobaz: 'baz' }
-collection.all()
-```
-
-#### `Collection.create`
-
-Will instantiate a new `Collection` with the same initialization function, but different variable values.
-
-```javascript
-import { Collection } from 'ensurism';
-
-const collection =
-  new Collection({ foo: 'bar', bar: 'baz' }, (vars) => ({
-    foobar: vars.get('foo') === 'bar' ? 'foobar' : 'foobaz',
-    foobaz: vars.ensure('bar', 'string')
-  }))
-  .create({ foo: 'foo' })
-
-// Returns: { foobar: 'foobaz', foobaz: 'baz' }
-collection.all()
-```
-
-#### `Collection.use`
-
-Will reassign the variables values to the current collection, and force the collection's initialization function to be run again upon the next property access.
-
-```javascript
-import { Collection } from 'ensurism';
-
-const collection = new Collection({
-  foo: 'bar',
-  bar: 'baz'
-}, (vars) => ({
-  foobar: vars.get('foo') === 'bar' ? 'foobar' : 'foobaz',
-  foobaz: vars.ensure('bar', { type: 'string', enum: ['bar', 'baz'] })
-}));
-
-// Returns: { foobar: 'foobar', foobaz: 'baz' }
-collection.all()
-collection.use({ foo: 'foo' });
-
-// Returns: { foobar: 'foobaz', foobaz: 'baz' }
-collection.all()
-
-collection.use({ bar: 'foo' });
-// Fails
-collection.all();
 ```

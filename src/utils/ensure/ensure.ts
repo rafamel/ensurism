@@ -1,36 +1,46 @@
 import Ajv from 'ajv';
 import deep from 'lodash.clonedeep';
-import { Type, SchemaTypeName, EmptyType, Schema } from '../../types';
-import { getPositionalAssertSchema } from '../../helpers/get-positional';
-import { EnsureSchema, Ensure } from './types';
+import { Serial } from 'type-core';
+import { getSchema } from '../../helpers/get-schema';
+import { Schema } from '../../definitions';
+import { EnsureResponse, EnsureSchema } from './types';
+
+export type Ensure<
+  T extends Serial.Type,
+  D extends Serial.Type,
+  E extends Serial.Type,
+  N extends Schema.TypeName,
+  A extends boolean = false
+> = EnsureResponse<T, D, E, N, A>;
+
+export declare namespace Ensure {
+  export interface Options<A extends boolean = boolean> {
+    assert?: A;
+  }
+
+  export type Schema<
+    T extends Serial.Type,
+    D extends Serial.Type,
+    E extends Serial.Type,
+    N extends Schema.TypeName
+  > = EnsureSchema<T, D, E, N>;
+}
 
 export function ensure<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName
->(data: T, schema: EnsureSchema<T, D, E, N>): Ensure<T, D, E, N>;
-export function ensure<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName,
+  T extends Serial.Type,
+  D extends Serial.Type,
+  E extends Serial.Type,
+  N extends Schema.TypeName,
   A extends boolean = false
 >(
   data: T,
-  assert: A | EmptyType,
-  schema: EnsureSchema<T, D, E, N>
-): Ensure<T, D, E, N, A>;
-
-export function ensure(
-  data: Type,
-  a: boolean | EmptyType | Schema | SchemaTypeName,
-  b?: Schema | SchemaTypeName
-): Ensure<Type, Type, Type, SchemaTypeName, boolean> {
+  schema: Ensure.Schema<T, D, E, N>,
+  options?: Ensure.Options<A>
+): Ensure<T, D, E, N, A> {
   const ajv = new Ajv({ useDefaults: true });
-  const { assert, schema } = getPositionalAssertSchema(a, b);
+  const schemaObj = getSchema(schema);
 
-  if (!ajv.validateSchema(schema)) {
+  if (!ajv.validateSchema(schemaObj)) {
     /* istanbul ignore next */
     throw ajv.errors
       ? Error(`Schema is not valid: ` + ajv.errorsText(ajv.errors))
@@ -41,8 +51,8 @@ export function ensure(
   const valid = ajv.validate(
     {
       type: 'object',
-      required: assert ? ['data'] : [],
-      properties: { data: schema }
+      required: options && options.assert ? ['data'] : [],
+      properties: { data: schemaObj }
     },
     item
   );

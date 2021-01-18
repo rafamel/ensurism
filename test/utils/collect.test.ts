@@ -6,7 +6,7 @@ import {
   select,
   collect,
   CollectError
-} from '~/utils';
+} from '../../src/utils';
 
 jest.mock('~/utils/assert');
 jest.mock('~/utils/take');
@@ -58,18 +58,16 @@ describe(`collect`, () => {
         f: 'barbaz'
       },
       ({ get, assert, take, ensure, coerce, select }) => ({
-        item: 'value',
         a: get(),
-        b: assert(),
-        c: take('c0arg' as any, 'c1arg' as any),
+        b: assert('b0arg' as any),
+        c: take('c0arg' as any),
         d: ensure('d0arg' as any, 'd1arg' as any),
         e: coerce('e0arg' as any, 'e1arg' as any),
-        f: select('f0arg' as any, 'f1arg' as any, 'f2arg' as any)
+        f: select('f0arg' as any, 'f1arg' as any)
       })
     );
 
     expect(result).toEqual({
-      item: 'value',
       a: 'foo',
       b: { assert: 'bar' },
       c: { take: 'baz' },
@@ -78,16 +76,11 @@ describe(`collect`, () => {
       f: { select: 'barbaz' }
     });
 
-    expect(mocks.assert).toHaveBeenCalledWith('bar');
-    expect(mocks.take).toHaveBeenCalledWith('baz', 'c0arg', 'c1arg');
+    expect(mocks.assert).toHaveBeenCalledWith('bar', 'b0arg');
+    expect(mocks.take).toHaveBeenCalledWith('baz', 'c0arg');
     expect(mocks.ensure).toHaveBeenCalledWith('foobar', 'd0arg', 'd1arg');
     expect(mocks.coerce).toHaveBeenCalledWith('foobaz', 'e0arg', 'e1arg');
-    expect(mocks.select).toHaveBeenCalledWith(
-      'barbaz',
-      'f0arg',
-      'f1arg',
-      'f2arg'
-    );
+    expect(mocks.select).toHaveBeenCalledWith('barbaz', 'f0arg', 'f1arg');
   });
   test(`fails with compact Error message`, () => {
     mocks.assert.mockImplementationOnce(() => {
@@ -100,7 +93,7 @@ describe(`collect`, () => {
     const fn = (): void => {
       collect({ b: 'bar', c: 'baz' }, ({ assert, take }) => ({
         b: assert(),
-        c: take('c0arg' as any, 'c1arg' as any)
+        c: take('c0arg' as any)
       }));
     };
 
@@ -121,11 +114,11 @@ describe(`collect`, () => {
     const fn = (): void => {
       collect(
         { b: 'bar', c: 'baz' },
-        { failEarly: true },
         ({ assert, take }) => ({
           b: assert(),
-          c: take('c0arg' as any, 'c1arg' as any)
-        })
+          c: take('c0arg' as any)
+        }),
+        { failEarly: true }
       );
     };
 

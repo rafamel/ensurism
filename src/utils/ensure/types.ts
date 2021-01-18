@@ -1,86 +1,81 @@
-import {
-  Type,
-  SchemaTypeName,
-  Schema,
-  GeneralizeType,
-  SchemaNameType,
-  NotDefinedType,
-  SchemaType
-} from '../../types';
+import { Serial, NonDefined } from 'type-core';
+import { Schema } from '../../definitions';
 
-/* Output */
-export type Ensure<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName,
+export type EnsureResponse<
+  T extends Serial.Type,
+  D extends Serial.Type,
+  E extends Serial.Type,
+  N extends Schema.TypeName,
   A extends boolean = false
 > = Exclude<
-  SchemaTypeName extends N
-    ? Extract<T, EnsureResponse<T, D, E, N>>
-    : EnsureResponse<T, D, E, N>,
-  A extends true ? NotDefinedType : never
+  Schema.TypeName extends N
+    ? Extract<T, EnsureResponse.Layer<T, D, E, N>>
+    : EnsureResponse.Layer<T, D, E, N>,
+  A extends true ? NonDefined : never
 >;
 
-type EnsureResponse<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName
-> = E extends SchemaType
-  ?
-      | Extract<EnsureResponseExtract<T, D, N>, NotDefinedType>
-      | Extract<E, EnsureResponseExtract<T, D, N>>
-  : EnsureResponseExtract<T, D, N>;
+declare namespace EnsureResponse {
+  export type Layer<
+    T extends Serial.Type,
+    D extends Serial.Type,
+    E extends Serial.Type,
+    N extends Schema.TypeName
+  > = E extends Schema.Type
+    ?
+        | Extract<EnsureResponseExtract<T, D, N>, NonDefined>
+        | Extract<E, EnsureResponseExtract<T, D, N>>
+    : EnsureResponseExtract<T, D, N>;
 
-export type EnsureResponseExtract<
-  T extends Type,
-  D extends Type,
-  N extends SchemaTypeName
-> = Extract<
-  Type extends T
-    ? SchemaNameType<N> | undefined
-    : SchemaNameType<N> | GeneralizeType<T>,
-  D extends SchemaType ? SchemaNameType<N> : SchemaNameType<N> | NotDefinedType
->;
+  export type EnsureResponseExtract<
+    T extends Serial.Type,
+    D extends Serial.Type,
+    N extends Schema.TypeName
+  > = Extract<
+    Serial.Type extends T
+      ? Schema.NameType<N> | undefined
+      : Schema.NameType<N> | Serial.Generalize<T>,
+    D extends Schema.Type ? Schema.NameType<N> : Schema.NameType<N> | NonDefined
+  >;
+}
 
-/* Input */
 export type EnsureSchema<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName
-> = EnsureSchemaRecord<T, D, E, N> | Schema<T> | EnsureSchemaName<T, N>;
+  T extends Serial.Type,
+  D extends Serial.Type,
+  E extends Serial.Type,
+  N extends Schema.TypeName
+> = EnsureSchema.Record<T, D, E, N> | Schema<T> | EnsureSchema.Name<T, N>;
 
-export type EnsureSchemaName<
-  T extends Type,
-  N extends SchemaTypeName
-> = Exclude<SchemaTypeName, SchemaTypeName<T>> extends never
-  ? SchemaTypeName & N
-  : SchemaTypeName<GeneralizeType<T>> & N;
+declare namespace EnsureSchema {
+  export type Name<T extends Serial.Type, N extends Schema.TypeName> = Exclude<
+    Schema.TypeName,
+    Schema.TypeName<T>
+  > extends never
+    ? Schema.TypeName & N
+    : Schema.TypeName<Serial.Generalize<T>> & N;
 
-export type EnsureSchemaRecord<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName
-> = Exclude<SchemaTypeName, SchemaTypeName<T>> extends never
-  ? EnsureSchemaRecordComplete<Type, D, E, N>
-  : EnsureSchemaRecordComplete<GeneralizeType<T>, D, E, N>;
+  export type Record<
+    T extends Serial.Type,
+    D extends Serial.Type,
+    E extends Serial.Type,
+    N extends Schema.TypeName
+  > = Exclude<Schema.TypeName, Schema.TypeName<T>> extends never
+    ? RecordComplete<Serial.Type, D, E, N>
+    : RecordComplete<Serial.Generalize<T>, D, E, N>;
 
-type EnsureSchemaRecordComplete<
-  T extends Type,
-  D extends Type,
-  E extends Type,
-  N extends SchemaTypeName
-> = EnsureSchemaRecordFragment<N, D, E> & Schema<T> & Schema<SchemaNameType<N>>;
+  export type RecordComplete<
+    T extends Serial.Type,
+    D extends Serial.Type,
+    E extends Serial.Type,
+    N extends Schema.TypeName
+  > = RecordFragment<N, D, E> & Schema<T> & Schema<Schema.NameType<N>>;
 
-interface EnsureSchemaRecordFragment<
-  N extends SchemaTypeName,
-  D extends Type,
-  E extends Type
-> {
-  type: N;
-  default?: D;
-  enum?: E[];
+  export interface RecordFragment<
+    N extends Schema.TypeName,
+    D extends Serial.Type,
+    E extends Serial.Type
+  > {
+    type: N;
+    default?: D;
+    enum?: E[];
+  }
 }

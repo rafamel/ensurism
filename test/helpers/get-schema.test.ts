@@ -1,4 +1,4 @@
-import { getSchema } from '~/helpers/get-schema';
+import { getSchema } from '../../src/helpers/get-schema';
 
 test(`succeeds with type name`, () => {
   expect(getSchema('string')).toEqual({ type: 'string' });

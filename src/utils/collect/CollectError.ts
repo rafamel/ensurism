@@ -1,4 +1,6 @@
-export class CollectError<T extends Record<string, Error>> extends Error {
+import { Members } from 'type-core';
+
+export class CollectError<T extends Members<Error>> extends Error {
   public errors: T;
   public constructor(errors: T) {
     let message = 'The following errors where found:';

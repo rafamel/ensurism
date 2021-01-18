@@ -1,38 +1,29 @@
-import * as getPositional from '~/helpers/get-positional';
-import { ensure } from '~/utils/ensure';
-import { coerce } from '~/utils/coerce';
-import { Schema } from '~/types';
+import { ensure } from '../../src/utils/ensure';
+import { coerce } from '../../src/utils/coerce';
+import { Schema } from '../../src/definitions';
 
 jest.mock('~/utils/ensure');
 const response = {};
 const mocks = {
-  ensure: (ensure as jest.Mock).mockImplementation(() => response),
-  getPositionalAssertSchema: jest.spyOn(
-    getPositional,
-    'getPositionalAssertSchema'
-  )
+  ensure: (ensure as jest.Mock).mockImplementation(() => response)
 };
 
 beforeEach(() => Object.values(mocks).map((mock) => mock.mockClear()));
 
 describe(`preconditions`, () => {
-  test(`calls getPositionalAssertSchema`, () => {
-    mocks.getPositionalAssertSchema.mockImplementationOnce(() => ({
-      assert: true,
-      schema: { type: 'string' }
-    }));
-    coerce('', 1 as any, 2 as any);
-    expect(mocks.getPositionalAssertSchema).toHaveBeenLastCalledWith(1, 2);
-  });
   test(`succeeds ensure w/ undefined data`, () => {
     coerce(undefined, 'string');
-    expect(mocks.ensure).toHaveBeenLastCalledWith(undefined, false, {
-      type: 'string'
-    });
-    coerce(undefined, true, 'string');
-    expect(mocks.ensure).toHaveBeenLastCalledWith(undefined, true, {
-      type: 'string'
-    });
+    expect(mocks.ensure).toHaveBeenLastCalledWith(
+      undefined,
+      { type: 'string' },
+      undefined
+    );
+    coerce(undefined, 'string', { assert: true });
+    expect(mocks.ensure).toHaveBeenLastCalledWith(
+      undefined,
+      { type: 'string' },
+      { assert: true }
+    );
   });
   test(`fails w/ invalid schema type`, () => {
     expect(() =>
@@ -43,17 +34,25 @@ describe(`preconditions`, () => {
     const schema: Schema = { type: 'string' };
 
     coerce('foo', schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, undefined);
     coerce('foo', 'string');
-    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', false, schema);
-    coerce('foo', false, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', false, schema);
-    coerce('foo', false, 'string');
-    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', false, schema);
-    coerce('foo', true, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', true, schema);
-    coerce('foo', true, 'string');
-    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', true, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, undefined);
+    coerce('foo', schema, { assert: false });
+    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, {
+      assert: false
+    });
+    coerce('foo', 'string', { assert: false });
+    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, {
+      assert: false
+    });
+    coerce('foo', schema, { assert: true });
+    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, {
+      assert: true
+    });
+    coerce('foo', 'string', { assert: true });
+    expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, {
+      assert: true
+    });
     expect(mocks.ensure).toHaveBeenCalledTimes(6);
   });
 });
@@ -63,12 +62,12 @@ describe(`from string`, () => {
     test(`succeeds`, () => {
       const schema: Schema = { type: 'string' };
       coerce('foo', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith('foo', false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, undefined);
     });
     test(`succeeds for stringified value`, () => {
       const schema: Schema = { type: 'string' };
       coerce(JSON.stringify('foo'), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith('foo', false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith('foo', schema, undefined);
     });
   });
   describe(`to integer, number`, () => {
@@ -76,18 +75,18 @@ describe(`from string`, () => {
       const schemas: Schema[] = [{ type: 'integer' }, { type: 'number' }];
       for (const schema of schemas) {
         coerce('-1', schema);
-        expect(mocks.ensure).toHaveBeenLastCalledWith(-1, false, schema);
+        expect(mocks.ensure).toHaveBeenLastCalledWith(-1, schema, undefined);
         coerce('0.2', schema);
-        expect(mocks.ensure).toHaveBeenLastCalledWith(0.2, false, schema);
+        expect(mocks.ensure).toHaveBeenLastCalledWith(0.2, schema, undefined);
       }
     });
     test(`succeeds for stringified value`, () => {
       const schemas: Schema[] = [{ type: 'integer' }, { type: 'number' }];
       for (const schema of schemas) {
         coerce(JSON.stringify(-1), schema);
-        expect(mocks.ensure).toHaveBeenLastCalledWith(-1, false, schema);
+        expect(mocks.ensure).toHaveBeenLastCalledWith(-1, schema, undefined);
         coerce(JSON.stringify(0.2), schema);
-        expect(mocks.ensure).toHaveBeenLastCalledWith(0.2, false, schema);
+        expect(mocks.ensure).toHaveBeenLastCalledWith(0.2, schema, undefined);
       }
     });
     test(`fails for NaN`, () => {
@@ -103,64 +102,64 @@ describe(`from string`, () => {
     test(`succeeds for falsy values`, () => {
       const schema: Schema = { type: 'boolean' };
       coerce('0', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce('', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce('""', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce('false', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce('null', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce('undefined', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce('NaN', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
     });
     test(`succeeds for truthy values`, () => {
       const schema: Schema = { type: 'boolean' };
       coerce('1', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
       coerce('-1', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
       coerce('foo', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
       coerce('true', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
     });
     test(`succeeds for stringified values`, () => {
       const schema: Schema = { type: 'boolean' };
       coerce(JSON.stringify(true), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
       coerce(JSON.stringify(false), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce(JSON.stringify(0), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce(JSON.stringify(''), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce(JSON.stringify(null), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
       coerce(JSON.stringify(Number.NaN), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
     });
   });
   describe(`to null`, () => {
     test(`succeeds for falsy values`, () => {
       const schema: Schema = { type: 'null' };
       coerce('0', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce('', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce('""', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce('false', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce('null', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce('undefined', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce('NaN', schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
     });
     test(`fails for truthy values`, () => {
       const schema: Schema = { type: 'null' };
@@ -174,15 +173,15 @@ describe(`from string`, () => {
     test(`succeeds for stringified values`, () => {
       const schema: Schema = { type: 'null' };
       coerce(JSON.stringify(false), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce(JSON.stringify(0), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce(JSON.stringify(''), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce(JSON.stringify(null), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
       coerce(JSON.stringify(Number.NaN), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
     });
   });
   describe(`to array`, () => {
@@ -190,7 +189,7 @@ describe(`from string`, () => {
       const item = ['foo', 'bar'];
       const schema: Schema = { type: 'array' };
       coerce(JSON.stringify(item), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(item, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(item, schema, undefined);
     });
     test(`fails for malformed data`, () => {
       expect(() =>
@@ -205,7 +204,7 @@ describe(`from string`, () => {
       const item = { foo: 'foo', bar: 'bar' };
       const schema: Schema = { type: 'object' };
       coerce(JSON.stringify(item), schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(item, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(item, schema, undefined);
     });
     test(`fails for malformed data`, () => {
       expect(() =>
@@ -222,35 +221,35 @@ describe(`from number`, () => {
     const schema: Schema = { type: 'string' };
 
     coerce(0, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('0', false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('0', schema, undefined);
     coerce(-1.5, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('-1.5', false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('-1.5', schema, undefined);
   });
   test(`to integer, number`, () => {
     const schemas: Schema[] = [{ type: 'integer' }, { type: 'number' }];
 
     for (const schema of schemas) {
       coerce(0, schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(0, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(0, schema, undefined);
       coerce(-1.5, schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(-1.5, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(-1.5, schema, undefined);
     }
   });
   test(`to boolean`, () => {
     const schema: Schema = { type: 'boolean' };
 
     coerce(0, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
     coerce(1, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
     coerce(-1, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
   });
   test(`to null`, () => {
     const schema: Schema = { type: 'null' };
 
     coerce(0, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
 
     expect(() => coerce(1, schema)).toThrowErrorMatchingInlineSnapshot(
       `"Data cannot be coerced to null"`
@@ -276,33 +275,33 @@ describe(`from boolean`, () => {
     const schema: Schema = { type: 'string' };
 
     coerce(true, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('true', false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('true', schema, undefined);
     coerce(false, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('false', false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('false', schema, undefined);
   });
   test(`to integer, number`, () => {
     const schemas: Schema[] = [{ type: 'integer' }, { type: 'number' }];
 
     for (const schema of schemas) {
       coerce(true, schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(1, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(1, schema, undefined);
       coerce(false, schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(0, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(0, schema, undefined);
     }
   });
   test(`to boolean`, () => {
     const schema: Schema = { type: 'boolean' };
 
     coerce(true, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(true, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(true, schema, undefined);
     coerce(false, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
   });
   test(`to null`, () => {
     const schema: Schema = { type: 'null' };
 
     coerce(false, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
 
     expect(() => coerce(true, schema)).toThrowErrorMatchingInlineSnapshot(
       `"Data cannot be coerced to null"`
@@ -331,27 +330,27 @@ describe(`from null`, () => {
     const schema: Schema = { type: 'string' };
 
     coerce(null, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith('null', false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith('null', schema, undefined);
   });
   test(`to integer, number`, () => {
     const schemas: Schema[] = [{ type: 'integer' }, { type: 'number' }];
 
     for (const schema of schemas) {
       coerce(null, schema);
-      expect(mocks.ensure).toHaveBeenLastCalledWith(0, false, schema);
+      expect(mocks.ensure).toHaveBeenLastCalledWith(0, schema, undefined);
     }
   });
   test(`to boolean`, () => {
     const schema: Schema = { type: 'boolean' };
 
     coerce(null, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(false, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(false, schema, undefined);
   });
   test(`to null`, () => {
     const schema: Schema = { type: 'null' };
 
     coerce(null, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(null, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
   });
   test(`to array`, () => {
     const schema: Schema = { type: 'array' };
@@ -390,7 +389,7 @@ describe(`from array`, () => {
     const data = ['foo', 'bar'];
 
     coerce(data, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(data, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(data, schema, undefined);
   });
   test(`to object`, () => {
     const schema: Schema = { type: 'object' };
@@ -399,8 +398,8 @@ describe(`from array`, () => {
     coerce(data, schema);
     expect(mocks.ensure).toHaveBeenLastCalledWith(
       { 0: 'foo', 1: 'bar' },
-      false,
-      schema
+      schema,
+      undefined
     );
   });
 });
@@ -440,8 +439,8 @@ describe(`from object`, () => {
     coerce(data, schema);
     expect(mocks.ensure).toHaveBeenLastCalledWith(
       ['foo', 'bar'],
-      false,
-      schema
+      schema,
+      undefined
     );
   });
   test(`to object`, () => {
@@ -449,6 +448,6 @@ describe(`from object`, () => {
     const data = { foo: 'foo', bar: 'bar' };
 
     coerce(data, schema);
-    expect(mocks.ensure).toHaveBeenLastCalledWith(data, false, schema);
+    expect(mocks.ensure).toHaveBeenLastCalledWith(data, schema, undefined);
   });
 });

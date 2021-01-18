@@ -1,6 +1,8 @@
-import { Schema, SchemaTypeName } from '../types';
+import { Schema } from '../definitions';
 
-export function getSchema(schema: Schema | SchemaTypeName | undefined): Schema {
+export function getSchema(
+  schema: Schema | Schema.TypeName | undefined
+): Schema {
   if (!schema) throw Error(`Schema was not provided`);
   if (typeof schema === 'string') schema = { type: schema };
   if (!schema.type) throw Error(`Schema must have a type`);

@@ -1,4 +1,4 @@
-import { assert } from '~/utils/assert';
+import { assert } from '../../src/utils/assert';
 
 test(`succeeds w/ defined data`, () => {
   expect(assert('')).toBe('');
@@ -12,29 +12,35 @@ test(`fails w/ undefined data`, () => {
     `"Expected data not to be undefined"`
   );
 });
-test(`deeps doesn't have an effect on basic types`, () => {
-  expect(assert('', true)).toBe('');
-  expect(assert(0, true)).toBe(0);
-  expect(assert(false, true)).toBe(false);
-  expect(assert(null, true)).toBe(null);
-  expect(assert(Number.NaN, true)).not.toBe(undefined);
-  expect(() => assert(undefined, true)).toThrowError();
+test(`Options.deep doesn't have an effect on basic types`, () => {
+  expect(assert('', { deep: true })).toBe('');
+  expect(assert(0, { deep: true })).toBe(0);
+  expect(assert(false, { deep: true })).toBe(false);
+  expect(assert(null, { deep: true })).toBe(null);
+  expect(assert(Number.NaN, { deep: true })).not.toBe(undefined);
+  expect(() => assert(undefined, { deep: true })).toThrowError();
 });
 test(`succeeds for undefined inner values wo/ deep`, () => {
   expect(assert({ a: undefined, b: 0 })).toEqual({ a: undefined, b: 0 });
-  expect(assert({ a: undefined, b: 0 }, false)).toEqual({ a: undefined, b: 0 });
+  expect(assert({ a: undefined, b: 0 }, { deep: false })).toEqual({
+    a: undefined,
+    b: 0
+  });
   expect(assert([undefined, 0])).toEqual([undefined, 0]);
-  expect(assert([undefined, 0], false)).toEqual([undefined, 0]);
+  expect(assert([undefined, 0], { deep: false })).toEqual([undefined, 0]);
 });
 test(`succeeds for undefined inner values w/ deep`, () => {
-  expect(assert({ a: false, b: 0 }, true)).toEqual({ a: false, b: 0 });
-  expect(assert([false, 0], true)).toEqual([false, 0]);
+  expect(assert({ a: false, b: 0 }, { deep: true })).toEqual({
+    a: false,
+    b: 0
+  });
+  expect(assert([false, 0], { deep: true })).toEqual([false, 0]);
 });
 test(`fails for undefined inner values w/ deep`, () => {
   expect(() =>
-    assert({ a: undefined, b: 0 }, true)
+    assert({ a: undefined, b: 0 }, { deep: true })
   ).toThrowErrorMatchingInlineSnapshot(
     `"An inner value of data is not defined"`
   );
-  expect(() => assert([undefined, 0], true)).toThrowError();
+  expect(() => assert([undefined, 0], { deep: true })).toThrowError();
 });

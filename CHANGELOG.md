@@ -1,3 +1,24 @@
+# [0.4.0](https://github.com/rafamel/ensurism/compare/v0.3.1...v0.4.0) (2021-01-18)
+
+
+### Bug Fixes
+
+* **deps:** updates dependencies ([a575cda](https://github.com/rafamel/ensurism/commit/a575cdad5d33ba85393e26065aac90816b42e4ee))
+* updates dependencies ([8a57955](https://github.com/rafamel/ensurism/commit/8a579554e27f020cc2dd57c68333aac6044633fc))
+
+
+### improvement
+
+* refactors utils, removes Collection, PureCollection ([a50ae95](https://github.com/rafamel/ensurism/commit/a50ae950e6ba96400e4123d88ee20d1cc973c3f0))
+
+
+### BREAKING CHANGES
+
+* Collection and PureCollection are no longer provided. Signatures for util functions
+have changed.
+
+
+
 ## [0.3.1](https://github.com/rafamel/ensurism/compare/v0.3.0...v0.3.1) (2020-04-09)
 
 

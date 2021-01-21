@@ -177,7 +177,7 @@ Coerces `data` to a `schema` type, then validates the data against the `schema`,
 
 * Signature: `coerce(data, schema, options)`
 * Params:
-  * `data`: the input data.
+  * `data`: the input data; `undefined` won't be coerced into the schema type.
   * `schema`: either a *JSON Schema object* with a `type` property, or a valid schema type, as a *string*.
   * `options`: *optional* object with optional properties:
     * `assert`: whether to assert the final output value is not `undefined`.

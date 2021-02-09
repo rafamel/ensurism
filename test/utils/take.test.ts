@@ -4,7 +4,7 @@ describe(`no strategy`, () => {
   test(`fails w/ invalid strategy`, () => {
     expect(() =>
       take([], { strategy: 'none' as any })
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid take strategy: none"`);
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid take strategy: none"`);
   });
 });
 
@@ -61,7 +61,11 @@ describe(`one`, () => {
   });
   describe(`w/ assert`, () => {
     test(`fails for empty array`, () => {
-      expect(() => take([], { assert: true, strategy: 'one' })).toThrowError();
+      expect(() =>
+        take([], { name: 'foo', assert: true, strategy: 'one' })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"expected \\"foo\\" data not to be undefined"`
+      );
     });
     test(`fails for array w/ undefined`, () => {
       expect(() =>
@@ -114,10 +118,16 @@ describe(`first (default)`, () => {
   });
   describe(`w/ assert`, () => {
     test(`fails for empty array`, () => {
-      expect(() => take([], { assert: true })).toThrowError();
       expect(() =>
-        take([], { assert: true, strategy: 'first' })
-      ).toThrowError();
+        take([], { name: 'foo', assert: true })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"expected \\"foo\\" data not to be undefined"`
+      );
+      expect(() =>
+        take([], { name: 'foo', assert: true, strategy: 'first' })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"expected \\"foo\\" data not to be undefined"`
+      );
     });
     test(`fails for array w/ undefined`, () => {
       expect(() => take([undefined, 'foo'], { assert: true })).toThrowError();
@@ -184,8 +194,10 @@ describe(`maybe`, () => {
   describe(`w/ assert`, () => {
     test(`fails for empty array`, () => {
       expect(() =>
-        take([], { assert: true, strategy: 'maybe' })
-      ).toThrowError();
+        take([], { name: 'foo', assert: true, strategy: 'maybe' })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"expected \\"foo\\" data not to be undefined"`
+      );
     });
     test(`fails for array w/ undefined`, () => {
       expect(() =>

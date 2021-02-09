@@ -103,6 +103,7 @@ Throws if `data` is `undefined`.
 * Params:
   * `data`: the input data.
   * `options`: *optional* object with optional properties:
+    * `name`: a name to be used for error messages.
     * `deep`: if `true` and `data` is an array or a record, `assert` will also throw if any of their elements are `undefined`.
 * Returns: the input `data`.
 
@@ -126,6 +127,7 @@ Returns the input `data` for records and basic types; for arrays, however, one o
 * Params:
   * `data`: the input data.
   * `options`: *optional* object with optional properties:
+    * `name`: a name to be used for error messages.
     * `assert`: whether to assert the final output value is not `undefined`.
     * `strategy`: applies to `data` arrays; one of:
       * `"first"`: it will return the first array item, if any. This is the **default** strategy.
@@ -155,6 +157,7 @@ Throws if `data` doesn't conform to a given `schema`. If the `schema` has `defau
   * `data`: the input data.
   * `schema`: either a *JSON Schema object* with a `type` property, or a valid schema type, as a *string*.
   * `options`: *optional* object with optional properties:
+    * `name`: a name to be used for error messages; if empty, `schema.title` will be used instead when available.
     * `assert`: whether to assert the final output value is not `undefined`.
 * Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
 
@@ -180,6 +183,7 @@ Coerces `data` to a `schema` type, then validates the data against the `schema`,
   * `data`: the input data; `undefined` won't be coerced into the schema type.
   * `schema`: either a *JSON Schema object* with a `type` property, or a valid schema type, as a *string*.
   * `options`: *optional* object with optional properties:
+    * `name`: a name to be used for error messages; if empty, `schema.title` will be used instead when available.
     * `assert`: whether to assert the final output value is not `undefined`.
 * Returns: a clone of the input `data` with, if it applies, the default values assigned as specified by `schema`.
 
@@ -258,6 +262,7 @@ If a `strategy` other than `"fallback"` is specified, the selected value -if any
   * `data`: property to select from `selector`.
   * `selector`: and object of values.
   * `options`: *optional* object with optional properties:
+    * `name`: a name to be used for error messages.
     * `assert`: whether to assert the final output value is not `undefined`.
     * `strategy`: applied when there's both a `selector.default` and data for `value` -see [merge strategies](https://github.com/rafamel/utils/tree/master/packages/merge-strategies); one of:
       * `"fallback"`: returns the data for `selector[value]` if available, otherwise returns `selector.default`. This is the **default** strategy.

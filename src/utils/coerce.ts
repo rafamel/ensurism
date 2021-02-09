@@ -3,6 +3,7 @@ import { Schema } from '../definitions';
 import { ensure, Ensure } from './ensure';
 import { Serial } from 'type-core';
 import { into } from 'pipettes';
+import { getName } from '~/helpers/get-name';
 
 export type Coerce<
   D extends Serial.Type,
@@ -13,6 +14,7 @@ export type Coerce<
 
 export declare namespace Coerce {
   export interface Options<A extends boolean = boolean> {
+    name?: string;
     assert?: A;
   }
   export type Schema<
@@ -32,7 +34,7 @@ export function coerce<
   schema: Coerce.Schema<D, E, N>,
   options?: Coerce.Options<A>
 ): Coerce<D, E, N, A> {
-  const schemaObj = getSchema(schema);
+  const schemaObj = getSchema(schema, options);
 
   return into(
     data,
@@ -44,11 +46,17 @@ export function coerce<
       if (Array.isArray(data)) {
         if (schemaObj.type === 'array') return data;
         if (schemaObj.type === 'object') return { ...data };
-        throw Error(`Invalid coercion type for array: ${schemaObj.type}`);
+        throw Error(
+          `invalid ${getName(options, schemaObj)}coercion type for array: ` +
+            schemaObj.type
+        );
       } else {
         if (schemaObj.type === 'array') return Object.values(data);
         if (schemaObj.type === 'object') return data;
-        throw Error(`Invalid coercion type for object: ${schemaObj.type}`);
+        throw Error(
+          `invalid ${getName(options, schemaObj)}coercion type for object: ` +
+            schemaObj.type
+        );
       }
     },
     (data) => {
@@ -63,7 +71,10 @@ export function coerce<
         case 'number': {
           const value = Number(data);
           if (String(value) === 'NaN') {
-            throw Error(`Data cannot be coerced to number: ${data}`);
+            throw Error(
+              getName(options, schemaObj) +
+                `data cannot be coerced to number: ${data}`
+            );
           }
           return value;
         }
@@ -84,21 +95,35 @@ export function coerce<
             try {
               value = JSON.parse(data);
             } catch (err) {
-              throw Error(`Invalid JSON data for ${schemaObj.type}: ${data}`);
+              throw Error(
+                `invalid ${getName(options, schemaObj)}JSON data for ` +
+                  `${schemaObj.type}: ${data}`
+              );
             }
             return value;
           }
-          throw Error(`Data cannot be coerced to ${schemaObj.type}: ${data}`);
+          throw Error(
+            `${getName(options, schemaObj)}data cannot be coerced to ` +
+              `${schemaObj.type}: ${data}`
+          );
         }
         default: {
-          throw Error(`Invalid schema type: ${schemaObj.type}`);
+          throw Error(
+            `invalid ${getName(options, schemaObj)}schema type: ` +
+              schemaObj.type
+          );
         }
       }
     },
     (data) => {
       if (schemaObj.type === 'null') {
-        if (data) throw Error(`Data cannot be coerced to null`);
-        else data = null;
+        if (data) {
+          throw Error(
+            `${getName(options, schemaObj)}data cannot be coerced to null`
+          );
+        } else {
+          data = null;
+        }
       }
       return ensure(data, schemaObj, options) as any;
     }

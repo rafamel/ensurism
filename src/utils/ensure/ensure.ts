@@ -4,6 +4,7 @@ import { Serial } from 'type-core';
 import { getSchema } from '../../helpers/get-schema';
 import { Schema } from '../../definitions';
 import { EnsureResponse, EnsureSchema } from './types';
+import { getName } from '~/helpers/get-name';
 
 export type Ensure<
   T extends Serial.Type,
@@ -15,6 +16,7 @@ export type Ensure<
 
 export declare namespace Ensure {
   export interface Options<A extends boolean = boolean> {
+    name?: string;
     assert?: A;
   }
 
@@ -38,13 +40,16 @@ export function ensure<
   options?: Ensure.Options<A>
 ): Ensure<T, D, E, N, A> {
   const ajv = new Ajv({ useDefaults: true });
-  const schemaObj = getSchema(schema);
+  const schemaObj = getSchema(schema, options);
 
   if (!ajv.validateSchema(schemaObj)) {
     /* istanbul ignore next */
     throw ajv.errors
-      ? Error(`Schema is not valid: ` + ajv.errorsText(ajv.errors))
-      : Error(`Schema is not valid`);
+      ? Error(
+          `${getName(options, schemaObj)}schema is not valid: ` +
+            ajv.errorsText(ajv.errors)
+        )
+      : Error(`${getName(options, schemaObj)}schema is not valid`);
   }
 
   const item = { data: deep(data) };
@@ -59,7 +64,10 @@ export function ensure<
 
   if (valid) return item.data as any;
   /* istanbul ignore next */
-  if (!ajv.errors) throw Error(`Data is not valid`);
+  if (!ajv.errors) {
+    throw Error(`${getName(options, schemaObj)}data is not valid`);
+  }
+
   const message = ajv.errorsText(
     ajv.errors.map((error) => {
       return {
@@ -73,5 +81,5 @@ export function ensure<
       };
     })
   );
-  throw Error(`Data is not valid: ` + message);
+  throw Error(`${getName(options, schemaObj)}data is not valid: ` + message);
 }

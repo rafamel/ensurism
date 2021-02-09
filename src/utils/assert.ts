@@ -1,4 +1,5 @@
 import { Members, NonDefined, TypeGuard } from 'type-core';
+import { getName } from '~/helpers/get-name';
 
 export type Assert<T, D extends boolean = false> = D extends true
   ? Exclude<T, NonDefined> extends Array<infer U>
@@ -10,6 +11,7 @@ export type Assert<T, D extends boolean = false> = D extends true
 
 export declare namespace Assert {
   export interface Options<D extends boolean = boolean> {
+    name?: string;
     deep?: D;
   }
 }
@@ -19,14 +21,14 @@ export function assert<T, D extends boolean = false>(
   options?: Assert.Options<D>
 ): Assert<T, D> {
   if (data === undefined) {
-    throw Error(`Expected data not to be undefined`);
+    throw Error(`expected ${getName(options)}data not to be undefined`);
   }
 
   if (options && options.deep && TypeGuard.isObject(data)) {
     const items = TypeGuard.isArray(data) ? data : Object.values(data);
     for (const item of items) {
       if (item === undefined) {
-        throw Error(`An inner value of data is not defined`);
+        throw Error(`an inner value of ${getName(options)}data is not defined`);
       }
     }
   }

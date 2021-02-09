@@ -2,6 +2,7 @@ import { assert } from './assert';
 import { Serial, Members, NonDefined } from 'type-core';
 import { shallow, merge, deep } from 'merge-strategies';
 import { into } from 'pipettes';
+import { getName } from '~/helpers/get-name';
 
 export type Select<
   T extends Select.Selector,
@@ -21,6 +22,7 @@ export declare namespace Select {
     A extends boolean = boolean,
     G extends Strategy = Strategy
   > {
+    name?: string;
     assert?: A;
     strategy?: G;
   }
@@ -68,7 +70,9 @@ export function select<
         }
         // eslint-disable-next-line no-fallthrough
         default: {
-          throw Error(`Selection data couldn't be stringified: ${data}`);
+          throw Error(
+            `${getName(options)}selection data couldn't be stringified: ${data}`
+          );
         }
       }
     },
@@ -99,10 +103,15 @@ export function select<
           return deep(a, b);
         }
         default: {
-          throw Error(`Invalid select strategy: ${strategy}`);
+          throw Error(
+            `invalid ${getName(options)}select strategy: ${strategy}`
+          );
         }
       }
     },
-    (value) => (options && options.assert ? assert(value) : value)
+    (value) =>
+      options && options.assert
+        ? assert(value, options.name ? { name: options.name } : undefined)
+        : value
   ) as Select<S, A, G>;
 }

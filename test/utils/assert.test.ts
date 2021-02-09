@@ -9,7 +9,7 @@ test(`succeeds w/ defined data`, () => {
 });
 test(`fails w/ undefined data`, () => {
   expect(() => assert(undefined)).toThrowErrorMatchingInlineSnapshot(
-    `"Expected data not to be undefined"`
+    `"expected data not to be undefined"`
   );
 });
 test(`Options.deep doesn't have an effect on basic types`, () => {
@@ -40,7 +40,11 @@ test(`fails for undefined inner values w/ deep`, () => {
   expect(() =>
     assert({ a: undefined, b: 0 }, { deep: true })
   ).toThrowErrorMatchingInlineSnapshot(
-    `"An inner value of data is not defined"`
+    `"an inner value of data is not defined"`
   );
-  expect(() => assert([undefined, 0], { deep: true })).toThrowError();
+  expect(() =>
+    assert([undefined, 0], { deep: true })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"an inner value of data is not defined"`
+  );
 });

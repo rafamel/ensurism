@@ -8,16 +8,16 @@ test(`succeeds w/ valid schema`, () => {
 });
 test(`fails w/ no schema`, () => {
   expect(() => getSchema(undefined)).toThrowErrorMatchingInlineSnapshot(
-    `"Schema was not provided"`
+    `"schema was not provided"`
   );
 });
 test(`fails w/ no schema type`, () => {
   expect(() => getSchema({} as any)).toThrowErrorMatchingInlineSnapshot(
-    `"Schema must have a type"`
+    `"schema must have a type"`
   );
 });
 test(`fails w/ schema type array`, () => {
   expect(() =>
     getSchema({ type: ['string'] } as any)
-  ).toThrowErrorMatchingInlineSnapshot(`"Schema type must be a string"`);
+  ).toThrowErrorMatchingInlineSnapshot(`"schema type must be a string"`);
 });

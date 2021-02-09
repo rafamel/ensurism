@@ -25,7 +25,7 @@ beforeEach(() => Object.values(mocks).map((mock) => mock.mockClear()));
 describe(`CollectError`, () => {
   test(`succeeds`, () => {
     const errors = {
-      foo: Error(`foo error\nExtra information`),
+      foo: Error(`foo error\nextra information`),
       bar: Error(`bar error`),
       baz: Error(`baz error`)
     };
@@ -37,9 +37,9 @@ describe(`CollectError`, () => {
     expect(error).toBeInstanceOf(Error);
     expect(error.errors).toBe(errors);
     expect(fn).toThrowErrorMatchingInlineSnapshot(`
-"The following errors where found:
+"the following errors where found:
 	foo: foo error
-		Extra information
+		extra information
 	bar: bar error
 	baz: baz error"
 `);
@@ -59,11 +59,11 @@ describe(`collect`, () => {
       },
       ({ get, assert, take, ensure, coerce, select }) => ({
         a: get(),
-        b: assert('b0arg' as any),
-        c: take('c0arg' as any),
-        d: ensure('d0arg' as any, 'd1arg' as any),
-        e: coerce('e0arg' as any, 'e1arg' as any),
-        f: select('f0arg' as any, 'f1arg' as any)
+        b: assert({ deep: true }),
+        c: take({ assert: true }),
+        d: ensure('schema' as any, { assert: true }),
+        e: coerce('schema' as any, { assert: true }),
+        f: select('selector' as any, { assert: true })
       })
     );
 
@@ -76,11 +76,20 @@ describe(`collect`, () => {
       f: { select: 'barbaz' }
     });
 
-    expect(mocks.assert).toHaveBeenCalledWith('bar', 'b0arg');
-    expect(mocks.take).toHaveBeenCalledWith('baz', 'c0arg');
-    expect(mocks.ensure).toHaveBeenCalledWith('foobar', 'd0arg', 'd1arg');
-    expect(mocks.coerce).toHaveBeenCalledWith('foobaz', 'e0arg', 'e1arg');
-    expect(mocks.select).toHaveBeenCalledWith('barbaz', 'f0arg', 'f1arg');
+    expect(mocks.assert).toHaveBeenCalledWith('bar', { deep: true, name: 'b' });
+    expect(mocks.take).toHaveBeenCalledWith('baz', { assert: true, name: 'c' });
+    expect(mocks.ensure).toHaveBeenCalledWith('foobar', 'schema', {
+      assert: true,
+      name: 'd'
+    });
+    expect(mocks.coerce).toHaveBeenCalledWith('foobaz', 'schema', {
+      assert: true,
+      name: 'e'
+    });
+    expect(mocks.select).toHaveBeenCalledWith('barbaz', 'selector', {
+      assert: true,
+      name: 'f'
+    });
   });
   test(`fails with compact Error message`, () => {
     mocks.assert.mockImplementationOnce(() => {
@@ -98,7 +107,7 @@ describe(`collect`, () => {
     };
 
     expect(fn).toThrowErrorMatchingInlineSnapshot(`
-"The following errors where found:
+"the following errors where found:
 	b: a error
 	c: b error"
 `);
@@ -123,7 +132,7 @@ describe(`collect`, () => {
     };
 
     expect(fn).toThrowErrorMatchingInlineSnapshot(`
-"The following errors where found:
+"the following errors where found:
 	b: a error"
 `);
   });

@@ -28,7 +28,7 @@ describe(`preconditions`, () => {
   test(`fails w/ invalid schema type`, () => {
     expect(() =>
       coerce('foo', 'bar' as any)
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid schema type: bar"`);
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid schema type: bar"`);
   });
   test(`calls ensure with all arguments`, () => {
     const schema: Schema = { type: 'string' };
@@ -93,7 +93,7 @@ describe(`from string`, () => {
       expect(() =>
         coerce('foo', { type: 'integer' })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Data cannot be coerced to number: foo"`
+        `"data cannot be coerced to number: foo"`
       );
       expect(() => coerce('foo', { type: 'number' })).toThrowError();
     });
@@ -164,7 +164,7 @@ describe(`from string`, () => {
     test(`fails for truthy values`, () => {
       const schema: Schema = { type: 'null' };
       expect(() => coerce('1', schema)).toThrowErrorMatchingInlineSnapshot(
-        `"Data cannot be coerced to null"`
+        `"data cannot be coerced to null"`
       );
       expect(() => coerce('-1', schema)).toThrowError();
       expect(() => coerce('foo', schema)).toThrowError();
@@ -195,7 +195,7 @@ describe(`from string`, () => {
       expect(() =>
         coerce('1,2,3', { type: 'array' })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid JSON data for array: 1,2,3"`
+        `"invalid JSON data for array: 1,2,3"`
       );
     });
   });
@@ -210,7 +210,7 @@ describe(`from string`, () => {
       expect(() =>
         coerce('foo: "foo"', { type: 'object' })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid JSON data for object: foo: \\"foo\\""`
+        `"invalid JSON data for object: foo: \\"foo\\""`
       );
     });
   });
@@ -252,20 +252,20 @@ describe(`from number`, () => {
     expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
 
     expect(() => coerce(1, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to null"`
+      `"data cannot be coerced to null"`
     );
     expect(() => coerce(-1, schema)).toThrowError();
   });
   test(`to array`, () => {
     const schema: Schema = { type: 'array' };
     expect(() => coerce(1, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to array: 1"`
+      `"data cannot be coerced to array: 1"`
     );
   });
   test(`to object`, () => {
     const schema: Schema = { type: 'object' };
     expect(() => coerce(1, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to object: 1"`
+      `"data cannot be coerced to object: 1"`
     );
   });
 });
@@ -304,14 +304,14 @@ describe(`from boolean`, () => {
     expect(mocks.ensure).toHaveBeenLastCalledWith(null, schema, undefined);
 
     expect(() => coerce(true, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to null"`
+      `"data cannot be coerced to null"`
     );
   });
   test(`to array`, () => {
     const schema: Schema = { type: 'array' };
 
     expect(() => coerce(true, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to array: true"`
+      `"data cannot be coerced to array: true"`
     );
     expect(() => coerce(false, schema)).toThrowError();
   });
@@ -319,7 +319,7 @@ describe(`from boolean`, () => {
     const schema: Schema = { type: 'object' };
 
     expect(() => coerce(true, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to object: true"`
+      `"data cannot be coerced to object: true"`
     );
     expect(() => coerce(false, schema)).toThrowError();
   });
@@ -355,13 +355,13 @@ describe(`from null`, () => {
   test(`to array`, () => {
     const schema: Schema = { type: 'array' };
     expect(() => coerce(null, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to array: null"`
+      `"data cannot be coerced to array: null"`
     );
   });
   test(`to object`, () => {
     const schema: Schema = { type: 'object' };
     expect(() => coerce(null, schema)).toThrowErrorMatchingInlineSnapshot(
-      `"Data cannot be coerced to object: null"`
+      `"data cannot be coerced to object: null"`
     );
   });
 });
@@ -369,19 +369,19 @@ describe(`from null`, () => {
 describe(`from array`, () => {
   test(`to string, integer, number, boolean, null`, () => {
     expect(() => coerce(['foo'], 'string')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for array: string"`
+      `"invalid coercion type for array: string"`
     );
     expect(() => coerce([1], 'integer')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for array: integer"`
+      `"invalid coercion type for array: integer"`
     );
     expect(() => coerce([1], 'number')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for array: number"`
+      `"invalid coercion type for array: number"`
     );
     expect(() => coerce([true], 'boolean')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for array: boolean"`
+      `"invalid coercion type for array: boolean"`
     );
     expect(() => coerce([null], 'null')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for array: null"`
+      `"invalid coercion type for array: null"`
     );
   });
   test(`to array`, () => {
@@ -409,27 +409,27 @@ describe(`from object`, () => {
     expect(() =>
       coerce({ foo: 'foo' }, 'string')
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for object: string"`
+      `"invalid coercion type for object: string"`
     );
     expect(() =>
       coerce({ foo: 1 }, 'integer')
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for object: integer"`
+      `"invalid coercion type for object: integer"`
     );
     expect(() =>
       coerce({ foo: 1 }, 'number')
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for object: number"`
+      `"invalid coercion type for object: number"`
     );
     expect(() =>
       coerce({ foo: true }, 'boolean')
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for object: boolean"`
+      `"invalid coercion type for object: boolean"`
     );
     expect(() =>
       coerce({ foo: null }, 'null')
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid coercion type for object: null"`
+      `"invalid coercion type for object: null"`
     );
   });
   test(`to array`, () => {

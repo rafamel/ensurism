@@ -22,13 +22,13 @@ describe(`preconditions`, () => {
     expect(() =>
       select({} as any, selector)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Selection data couldn't be stringified: [object Object]"`
+      `"selection data couldn't be stringified: [object Object]"`
     );
   });
   test(`fais for invalid strategy`, () => {
     expect(() =>
       select('bar', selector, { strategy: 'none' as any })
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid select strategy: none"`);
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid select strategy: none"`);
   });
 });
 describe(`wo/ assert`, () => {
@@ -125,7 +125,11 @@ describe(`wo/ assert`, () => {
 
 describe(`w/ assert`, () => {
   test(`fails wo/ default`, () => {
-    expect(() => select('baz', selector, { assert: true })).toThrowError();
+    expect(() =>
+      select('baz', selector, { name: 'foo', assert: true })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"expected \\"foo\\" data not to be undefined"`
+    );
 
     for (const strategy of strategies) {
       expect(() =>

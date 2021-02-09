@@ -18,7 +18,7 @@ export declare namespace Collect {
 
   export type Collection<O extends Members<Collector>> = UnaryFn<Actions, O>;
 
-  export type Collector<T = any> = UnaryFn<Serial.Type, T>;
+  export type Collector<T = any> = (data: Serial.Type, name?: string) => T;
 
   export interface Actions {
     get(): Collector<Serial.Type>;
@@ -63,12 +63,34 @@ export declare namespace Collect {
 }
 
 const actions: Collect.Actions = {
-  get: () => (data) => data,
-  assert: (...args) => (data: any) => assert(data, ...args),
-  take: (...args) => (data: any) => take(data, ...args),
-  ensure: (...args) => (data: any) => ensure(data, ...args) as any,
-  coerce: (...args) => (data: any) => coerce(data, ...args) as any,
-  select: (...args) => (data: any) => select(data, ...args)
+  get() {
+    return (data) => data;
+  },
+  assert(options?: Assert.Options) {
+    return (data: any, name?: string) => {
+      return assert(data, Object.assign({ name }, options));
+    };
+  },
+  take(options?: Take.Options) {
+    return (data: any, name?: string) => {
+      return take(data, Object.assign({ name }, options));
+    };
+  },
+  ensure(schema: any, options?: Ensure.Options) {
+    return (data: any, name?: string) => {
+      return ensure(data, schema, Object.assign({ name }, options)) as any;
+    };
+  },
+  coerce(schema: any, options?: Coerce.Options) {
+    return (data: any, name?: string) => {
+      return coerce(data, schema, Object.assign({ name }, options)) as any;
+    };
+  },
+  select(selector: any, options?: Select.Options) {
+    return (data: any, name?: string) => {
+      return select(data, selector, Object.assign({ name }, options)) as any;
+    };
+  }
 };
 
 export function collect<
@@ -86,7 +108,7 @@ export function collect<
   for (const key of Object.keys(response) as Array<keyof O & keyof I>) {
     const fn = response[key];
     try {
-      results[key] = fn(data[key]);
+      results[key] = fn(data[key], key as string);
     } catch (err) {
       errors[key as string] = err;
 

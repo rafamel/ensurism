@@ -1,3 +1,17 @@
+# [0.5.0](https://github.com/rafamel/ensurism/compare/v0.4.0...v0.5.0) (2021-02-09)
+
+
+### Bug Fixes
+
+* **deps:** updates dependencies ([61fb94d](https://github.com/rafamel/ensurism/commit/61fb94d134bcd8dcee948573d3fe93871e5aff7e))
+
+
+### Features
+
+* identifies data by name in error messages ([68bbb6f](https://github.com/rafamel/ensurism/commit/68bbb6f33cdfef21092858085f2b141932087352))
+
+
+
 # [0.4.0](https://github.com/rafamel/ensurism/compare/v0.3.1...v0.4.0) (2021-01-18)
 
 

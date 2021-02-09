@@ -70,8 +70,8 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@types/json-schema": "^7.0.6",
-    "ajv": "^7.0.3",
+    "@types/json-schema": "^7.0.7",
+    "ajv": "^7.0.4",
     "lodash.clonedeep": "^4.5.0",
     "merge-strategies": "^0.1.6",
     "pipettes": "^0.1.3",

@@ -1,6 +1,6 @@
 {
   "name": "ensurism",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Rafa Mel",
   "description": "A validation and conditional assignment utility belt",
   "keywords": [

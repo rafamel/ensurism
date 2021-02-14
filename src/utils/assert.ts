@@ -12,6 +12,7 @@ export type Assert<T, D extends boolean = false> = D extends true
 export declare namespace Assert {
   export interface Options<D extends boolean = boolean> {
     name?: string;
+    message?: string;
     deep?: D;
   }
 }
@@ -20,15 +21,19 @@ export function assert<T, D extends boolean = false>(
   data: T,
   options?: Assert.Options<D>
 ): Assert<T, D> {
+  const msg = options && options.message;
+
   if (data === undefined) {
-    throw Error(`expected ${getName(options)}data not to be undefined`);
+    throw Error(msg || `expected ${getName(options)}data not to be undefined`);
   }
 
   if (options && options.deep && TypeGuard.isObject(data)) {
     const items = TypeGuard.isArray(data) ? data : Object.values(data);
     for (const item of items) {
       if (item === undefined) {
-        throw Error(`an inner value of ${getName(options)}data is not defined`);
+        throw Error(
+          msg || `an inner value of ${getName(options)}data is not defined`
+        );
       }
     }
   }

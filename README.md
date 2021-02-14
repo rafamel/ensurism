@@ -104,6 +104,7 @@ Throws if `data` is `undefined`.
   * `data`: the input data.
   * `options`: *optional* object with optional properties:
     * `name`: a name to be used for error messages.
+    * `message`: an error message to use instead of the default.
     * `deep`: if `true` and `data` is an array or a record, `assert` will also throw if any of their elements are `undefined`.
 * Returns: the input `data`.
 

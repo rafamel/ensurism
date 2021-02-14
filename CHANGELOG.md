@@ -1,3 +1,18 @@
+# [0.6.0](https://github.com/rafamel/ensurism/compare/v0.5.1...v0.6.0) (2021-02-14)
+
+
+### Bug Fixes
+
+* **deps:** updates dependencies ([61d0a9c](https://github.com/rafamel/ensurism/commit/61d0a9c7081c9fe8029a650dd21d6ace00ff34b6))
+* **utils:** fixes ensure/coerce string format validation ([0b3cbf0](https://github.com/rafamel/ensurism/commit/0b3cbf0d313592dc3b67ec22f076541300708e71)), closes [#3](https://github.com/rafamel/ensurism/issues/3)
+
+
+### Features
+
+* **utils:** assert takes an optional error message ([dc8102c](https://github.com/rafamel/ensurism/commit/dc8102ca5374363e19e746914eec1829b16db44b))
+
+
+
 ## [0.5.1](https://github.com/rafamel/ensurism/compare/v0.5.0...v0.5.1) (2021-02-10)
 
 

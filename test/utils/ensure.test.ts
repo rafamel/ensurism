@@ -84,3 +84,33 @@ describe(`not defined`, () => {
     expect(ensure(undefined, schema, { assert: false })).toBe('bar');
   });
 });
+
+describe(`formats`, () => {
+  test(`uri`, () => {
+    expect(() =>
+      ensure('http://example.com', { type: 'string', format: 'uri' })
+    ).not.toThrow();
+    expect(() =>
+      ensure('example', { type: 'string', format: 'uri' })
+    ).toThrowError();
+  });
+  test(`email`, () => {
+    expect(() =>
+      ensure('foo@example.com', { type: 'string', format: 'email' })
+    ).not.toThrow();
+    expect(() =>
+      ensure('example.com', { type: 'string', format: 'email' })
+    ).toThrowError();
+    expect(() =>
+      ensure('квіточка@пошта.укр', { type: 'string', format: 'email' })
+    ).toThrowError();
+  });
+  test(`idn-email`, () => {
+    expect(() =>
+      ensure('квіточка@пошта.укр', { type: 'string', format: 'idn-email' })
+    ).not.toThrow();
+    expect(() =>
+      ensure('example.com', { type: 'string', format: 'idn-email' })
+    ).toThrowError();
+  });
+});

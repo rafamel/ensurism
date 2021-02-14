@@ -1,10 +1,13 @@
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import add2019Formats from 'ajv-formats-draft2019';
 import deep from 'lodash.clonedeep';
+import { into } from 'pipettes';
 import { Serial } from 'type-core';
-import { getSchema } from '../../helpers/get-schema';
 import { Schema } from '../../definitions';
 import { EnsureResponse, EnsureSchema } from './types';
-import { getName } from '~/helpers/get-name';
+import { getSchema } from '../../helpers/get-schema';
+import { getName } from '../../helpers/get-name';
 
 export type Ensure<
   T extends Serial.Type,
@@ -39,7 +42,7 @@ export function ensure<
   schema: Ensure.Schema<T, D, E, N>,
   options?: Ensure.Options<A>
 ): Ensure<T, D, E, N, A> {
-  const ajv = new Ajv({ useDefaults: true });
+  const ajv = into(new Ajv({ useDefaults: true }), addFormats, add2019Formats);
   const schemaObj = getSchema(schema, options);
 
   if (!ajv.validateSchema(schemaObj)) {

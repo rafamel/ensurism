@@ -13,19 +13,25 @@ export interface Schema<T extends Serial.Type = Serial.Type>
 
 export declare namespace Schema {
   export type Format =
-    | 'date-time'
-    | 'time'
     | 'date'
-    | 'email'
-    | 'idn-email'
-    | 'hostname'
-    | 'idn-hostname'
-    | 'ipv4'
-    | 'ipv6'
+    | 'time'
+    | 'date-time'
+    | 'duration'
     | 'uri'
     | 'uri-reference'
+    | 'uri-template'
+    | 'email'
+    | 'hostname'
+    | 'ipv4'
+    | 'ipv6'
+    | 'regex'
+    | 'uuid'
+    | 'json-pointer'
+    | 'relative-json-pointer'
     | 'iri'
-    | 'iri-reference';
+    | 'iri-reference'
+    | 'idn-email'
+    | 'idn-hostname';
 
   export type Type<T extends Serial.Type = Serial.Type> = JSONSchema7Type & T;
 

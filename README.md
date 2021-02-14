@@ -32,7 +32,7 @@
 
 ### Validation
 
-The most general util for validation is [`ensure`](#ensure); however, be sure to take a look to all [`utils`](#utils) to best choose the best fits for your use cases.
+The most general util for validation is [`ensure`](#ensure), wich uses *JSON Schema* to validate your data. However, be sure to take a look at the remaining [`utils`](#utils) to find the best fits for your use cases.
 
 ### Environment Variables
 
@@ -151,7 +151,9 @@ take([undefined], { assert: true, strategy: 'first' });
 
 ### `ensure`
 
-Throws if `data` doesn't conform to a given `schema`. If the `schema` has `default`s, they will be assigned to the returned data.
+Throws if `data` doesn't conform to a given `schema`. If the `schema` has `default` values, they will be assigned to the returned data. Additional properties, when allowed by the schemas, will not be removed. No mutation will occurr for input data.
+
+Uses *JSON Schema* validation, as implemented by [*ajv*](https://github.com/ajv-validator/ajv). Further *string format* validation is provided by [*ajv-formats*](https://github.com/ajv-validator/ajv-formats) and [*ajv-formats-draft2019*.](https://github.com/luzlab/ajv-formats-draft2019)
 
 * Signature: `ensure(data, schema, options)`
 * Params:
@@ -177,7 +179,7 @@ ensure(undefined, 'string', { assert: true });
 
 ### `coerce`
 
-Coerces `data` to a `schema` type, then validates the data against the `schema`, similarly to [`ensure`](#ensure).
+Coerces `data` to the root `schema` type, then validates the data against the `schema` by using [`ensure`](#ensure). Inner elements for objects and arrays will not be coerced.
 
 * Signature: `coerce(data, schema, options)`
 * Params:

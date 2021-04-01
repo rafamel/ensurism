@@ -55,7 +55,7 @@
     "url": "https://github.com/rafamel/ensurism/issues"
   },
   "devDependencies": {
-    "@pika/pack": "^0.4.0",
+    "@pika/pack": "^0.5.0",
     "@pika/plugin-build-web": "^0.9.2",
     "@pika/plugin-standard-pkg": "^0.9.2",
     "@riseup/library": "^0.5.0",
@@ -65,7 +65,7 @@
     "@zerollup/ts-transform-paths": "^1.7.18",
     "coveralls": "^3.1.0",
     "husky": "^4.3.8",
-    "kpo": "^0.11.1",
+    "kpo": "^0.14.0",
     "onchange": "^7.1.0",
     "typescript": "^3.9.9"
   },

@@ -1,12 +1,14 @@
+import { describe, expect, test } from 'vitest';
+
 import { ensure } from '../../src/utils/ensure';
-import { Schema } from '../../src/definitions';
+import type { Schema } from '../../src/definitions';
 
 describe(`preconditions`, () => {
   test(`validates schema`, () => {
     expect(() =>
       ensure('foo', 'bar' as any)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"schema is not valid: data/type should be equal to one of the allowed values, data/type should be array, data/type should match some schema in anyOf"`
+      `[Error: schema is not valid: data/type should be equal to one of the allowed values, data/type should be array, data/type should match some schema in anyOf]`
     );
   });
 });
@@ -20,7 +22,7 @@ describe(`defined`, () => {
   test(`fails w/ type name`, () => {
     const data: any = 'foo';
     expect(() => ensure(data, 'number')).toThrowErrorMatchingInlineSnapshot(
-      `"data is not valid: data should be number"`
+      `[Error: data is not valid: data should be number]`
     );
     expect(() => ensure(data, 'number', { assert: true })).toThrowError();
     expect(() => ensure(data, 'number', { assert: false })).toThrowError();
@@ -35,7 +37,7 @@ describe(`defined`, () => {
     expect(() =>
       ensure(data, { type: 'number' })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"data is not valid: data should be number"`
+      `[Error: data is not valid: data should be number]`
     );
     expect(() =>
       ensure(data, { type: 'number' }, { assert: true })
@@ -61,7 +63,7 @@ describe(`not defined`, () => {
     expect(() =>
       ensure(undefined, 'string', { assert: true })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"data is not valid: data should not be undefined"`
+      `[Error: data is not valid: data should not be undefined]`
     );
   });
   test(`passes with schema`, () => {
@@ -74,7 +76,7 @@ describe(`not defined`, () => {
     expect(() =>
       ensure(undefined, { type: 'string' }, { assert: true })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"data is not valid: data should not be undefined"`
+      `[Error: data is not valid: data should not be undefined]`
     );
   });
   test(`sets default value`, () => {

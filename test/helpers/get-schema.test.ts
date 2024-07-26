@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import { getSchema } from '../../src/helpers/get-schema';
 
 test(`succeeds with type name`, () => {
@@ -8,16 +10,18 @@ test(`succeeds w/ valid schema`, () => {
 });
 test(`fails w/ no schema`, () => {
   expect(() => getSchema(undefined)).toThrowErrorMatchingInlineSnapshot(
-    `"schema was not provided"`
+    `[Error: schema was not provided]`
   );
 });
 test(`fails w/ no schema type`, () => {
   expect(() => getSchema({} as any)).toThrowErrorMatchingInlineSnapshot(
-    `"schema must have a type"`
+    `[Error: schema must have a type]`
   );
 });
 test(`fails w/ schema type array`, () => {
   expect(() =>
     getSchema({ type: ['string'] } as any)
-  ).toThrowErrorMatchingInlineSnapshot(`"schema type must be a string"`);
+  ).toThrowErrorMatchingInlineSnapshot(
+    `[TypeError: schema type must be a string]`
+  );
 });

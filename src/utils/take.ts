@@ -1,7 +1,8 @@
-import { NonDefined } from 'type-core';
+import type { NonDefined } from 'type-core';
 import { into } from 'pipettes';
+
+import { getName } from '../helpers/get-name';
 import { assert } from './assert';
-import { getName } from '~/helpers/get-name';
 
 export type Take<T, A extends boolean = false> = Exclude<
   T extends Array<infer U> ? U | Exclude<T, any[]> : T,
@@ -30,7 +31,7 @@ export function take<T, A extends boolean = false>(
       switch (strategy) {
         case 'one': {
           if (data.length > 1) {
-            throw Error(
+            throw new Error(
               `expected ${getName(options)}data ` +
                 'to contain no more than one value'
             );
@@ -47,7 +48,9 @@ export function take<T, A extends boolean = false>(
           return undefined;
         }
         default: {
-          throw Error(`invalid ${getName(options)}take strategy: ${strategy}`);
+          throw new Error(
+            `invalid ${getName(options)}take strategy: ${strategy}`
+          );
         }
       }
     },

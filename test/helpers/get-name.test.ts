@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import { getName } from '../../src/helpers/get-name';
 
 test(`succeeds wo/ options, schema`, () => {

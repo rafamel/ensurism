@@ -1,8 +1,9 @@
-import { assert } from './assert';
-import { Serial, Members, NonDefined } from 'type-core';
-import { shallow, merge, deep } from 'merge-strategies';
+import type { Members, NonDefined, Serial } from 'type-core';
+import { deep, merge, shallow } from 'merge-strategies';
 import { into } from 'pipettes';
-import { getName } from '~/helpers/get-name';
+
+import { getName } from '../helpers/get-name';
+import { assert } from './assert';
 
 export type Select<
   T extends Select.Selector,
@@ -12,8 +13,8 @@ export type Select<
   unknown extends T['default']
     ? T[keyof T] | undefined
     : G extends 'fallback'
-    ? T[keyof T]
-    : T[Exclude<keyof T, 'default'>] & T['default'],
+      ? T[keyof T]
+      : T[Exclude<keyof T, 'default'>] & T['default'],
   A extends true ? NonDefined : never
 >;
 
@@ -70,7 +71,7 @@ export function select<
         }
         // eslint-disable-next-line no-fallthrough
         default: {
-          throw Error(
+          throw new Error(
             `${getName(options)}selection data couldn't be stringified: ${data}`
           );
         }
@@ -103,7 +104,7 @@ export function select<
           return deep(a, b);
         }
         default: {
-          throw Error(
+          throw new Error(
             `invalid ${getName(options)}select strategy: ${strategy}`
           );
         }

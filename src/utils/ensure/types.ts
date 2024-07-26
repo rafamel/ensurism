@@ -1,5 +1,6 @@
-import { Serial, NonDefined } from 'type-core';
-import { Schema } from '../../definitions';
+import type { NonDefined, Serial } from 'type-core';
+
+import type { Schema } from '../../definitions';
 
 export type EnsureResponse<
   T extends Serial.Type,
@@ -46,21 +47,20 @@ export type EnsureSchema<
 > = EnsureSchema.Record<T, D, E, N> | Schema<T> | EnsureSchema.Name<T, N>;
 
 declare namespace EnsureSchema {
-  export type Name<T extends Serial.Type, N extends Schema.TypeName> = Exclude<
-    Schema.TypeName,
-    Schema.TypeName<T>
-  > extends never
-    ? Schema.TypeName & N
-    : Schema.TypeName<Serial.Generalize<T>> & N;
+  export type Name<T extends Serial.Type, N extends Schema.TypeName> =
+    Exclude<Schema.TypeName, Schema.TypeName<T>> extends never
+      ? Schema.TypeName & N
+      : Schema.TypeName<Serial.Generalize<T>> & N;
 
   export type Record<
     T extends Serial.Type,
     D extends Serial.Type,
     E extends Serial.Type,
     N extends Schema.TypeName
-  > = Exclude<Schema.TypeName, Schema.TypeName<T>> extends never
-    ? RecordComplete<Serial.Type, D, E, N>
-    : RecordComplete<Serial.Generalize<T>, D, E, N>;
+  > =
+    Exclude<Schema.TypeName, Schema.TypeName<T>> extends never
+      ? RecordComplete<Serial.Type, D, E, N>
+      : RecordComplete<Serial.Generalize<T>, D, E, N>;
 
   export type RecordComplete<
     T extends Serial.Type,

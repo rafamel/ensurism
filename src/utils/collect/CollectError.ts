@@ -1,4 +1,4 @@
-import { Members } from 'type-core';
+import type { Members } from 'type-core';
 
 export class CollectError<T extends Members<Error>> extends Error {
   public errors: T;

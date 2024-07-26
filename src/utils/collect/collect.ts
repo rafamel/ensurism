@@ -1,11 +1,12 @@
-import { Schema } from '../../definitions';
-import { assert, Assert } from '../assert';
-import { take, Take } from '../take';
-import { ensure, Ensure } from '../ensure';
-import { coerce, Coerce } from '../coerce';
-import { select, Select } from '../select';
+import type { Members, Serial, UnaryFn } from 'type-core';
+
+import type { Schema } from '../../definitions';
+import { type Assert, assert } from '../assert';
+import { type Take, take } from '../take';
+import { type Ensure, ensure } from '../ensure';
+import { type Coerce, coerce } from '../coerce';
+import { type Select, select } from '../select';
 import { CollectError } from './CollectError';
-import { Serial, Members, UnaryFn } from 'type-core';
 
 export type Collect<O> = {
   [P in keyof O]: O[P] extends Collect.Collector ? ReturnType<O[P]> : never;
@@ -21,17 +22,17 @@ export declare namespace Collect {
   export type Collector<T = any> = UnaryFn<Serial.Type, T>;
 
   export interface Actions {
-    get(): Collector<Serial.Type>;
+    get: () => Collector<Serial.Type>;
 
-    assert<D extends boolean = false>(
+    assert: <D extends boolean = false>(
       options?: Assert.Options
-    ): Collector<Assert<Serial.Type, D>>;
+    ) => Collector<Assert<Serial.Type, D>>;
 
-    take<A extends boolean = false>(
+    take: <A extends boolean = false>(
       options?: Take.Options<A>
-    ): Collector<Take<Serial.Type, A>>;
+    ) => Collector<Take<Serial.Type, A>>;
 
-    ensure<
+    ensure: <
       D extends Serial.Type,
       E extends Serial.Type,
       N extends Schema.TypeName = never,
@@ -39,9 +40,9 @@ export declare namespace Collect {
     >(
       schema: Ensure.Schema<any, D, E, N>,
       options?: Ensure.Options<A>
-    ): Collector<Ensure<Serial.Type, D, E, N, A>>;
+    ) => Collector<Ensure<Serial.Type, D, E, N, A>>;
 
-    coerce<
+    coerce: <
       D extends Serial.Type,
       E extends Serial.Type,
       N extends Schema.TypeName,
@@ -49,26 +50,41 @@ export declare namespace Collect {
     >(
       schema: Coerce.Schema<D, E, N>,
       options?: Coerce.Options<A>
-    ): Collector<Coerce<D, E, N, A>>;
+    ) => Collector<Coerce<D, E, N, A>>;
 
-    select<
+    select: <
       S extends Select.Selector,
       G extends Select.Strategy = 'fallback',
       A extends boolean = false
     >(
       selector: Select.Selector<Serial.Primitive, S>,
       options?: Select.Options<A, G>
-    ): Collector<Select<S, A, G>>;
+    ) => Collector<Select<S, A, G>>;
   }
 }
 
 const actions: Collect.Actions = {
   get: () => (data) => data,
-  assert: (...args) => (data: any) => assert(data, ...args),
-  take: (...args) => (data: any) => take(data, ...args),
-  ensure: (...args) => (data: any) => ensure(data, ...args) as any,
-  coerce: (...args) => (data: any) => coerce(data, ...args) as any,
-  select: (...args) => (data: any) => select(data, ...args)
+  assert:
+    (...args) =>
+    (data: any) =>
+      assert(data, ...args),
+  take:
+    (...args) =>
+    (data: any) =>
+      take(data, ...args),
+  ensure:
+    (...args) =>
+    (data: any) =>
+      ensure(data, ...args) as any,
+  coerce:
+    (...args) =>
+    (data: any) =>
+      coerce(data, ...args) as any,
+  select:
+    (...args) =>
+    (data: any) =>
+      select(data, ...args)
 };
 
 export function collect<
@@ -87,7 +103,7 @@ export function collect<
     const fn = response[key];
     try {
       results[key] = fn(data[key]);
-    } catch (err) {
+    } catch (err: any) {
       errors[key as string] = err;
 
       if (options && options.failEarly) break;

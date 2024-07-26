@@ -3,11 +3,12 @@ import addFormats from 'ajv-formats';
 import add2019Formats from 'ajv-formats-draft2019';
 import deep from 'lodash.clonedeep';
 import { into } from 'pipettes';
-import { Serial } from 'type-core';
-import { Schema } from '../../definitions';
-import { EnsureResponse, EnsureSchema } from './types';
+import type { Serial } from 'type-core';
+
+import type { Schema } from '../../definitions';
 import { getSchema } from '../../helpers/get-schema';
 import { getName } from '../../helpers/get-name';
+import type { EnsureResponse, EnsureSchema } from './types';
 
 export type Ensure<
   T extends Serial.Type,
@@ -48,11 +49,11 @@ export function ensure<
   if (!ajv.validateSchema(schemaObj)) {
     /* istanbul ignore next */
     throw ajv.errors
-      ? Error(
+      ? new Error(
           `${getName(options, schemaObj)}schema is not valid: ` +
             ajv.errorsText(ajv.errors)
         )
-      : Error(`${getName(options, schemaObj)}schema is not valid`);
+      : new Error(`${getName(options, schemaObj)}schema is not valid`);
   }
 
   const item = { data: deep(data) };
@@ -68,7 +69,7 @@ export function ensure<
   if (valid) return item.data as any;
   /* istanbul ignore next */
   if (!ajv.errors) {
-    throw Error(`${getName(options, schemaObj)}data is not valid`);
+    throw new Error(`${getName(options, schemaObj)}data is not valid`);
   }
 
   const message = ajv.errorsText(
@@ -84,5 +85,7 @@ export function ensure<
       };
     })
   );
-  throw Error(`${getName(options, schemaObj)}data is not valid: ` + message);
+  throw new Error(
+    `${getName(options, schemaObj)}data is not valid: ` + message
+  );
 }

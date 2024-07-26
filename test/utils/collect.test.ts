@@ -1,33 +1,34 @@
+import { type Mock, describe, expect, test, vi } from 'vitest';
+
 import {
+  CollectError,
   assert,
-  take,
-  ensure,
   coerce,
-  select,
   collect,
-  CollectError
+  ensure,
+  select,
+  take
 } from '../../src/utils';
 
-jest.mock('~/utils/assert');
-jest.mock('~/utils/take');
-jest.mock('~/utils/ensure');
-jest.mock('~/utils/coerce');
-jest.mock('~/utils/select');
+vi.mock('../../src/utils/assert');
+vi.mock('../../src/utils/take');
+vi.mock('../../src/utils/ensure');
+vi.mock('../../src/utils/coerce');
+vi.mock('../../src/utils/select');
 const mocks = {
-  assert: (assert as jest.Mock).mockImplementation((assert) => ({ assert })),
-  take: (take as jest.Mock).mockImplementation((take) => ({ take })),
-  ensure: (ensure as jest.Mock).mockImplementation((ensure) => ({ ensure })),
-  coerce: (coerce as jest.Mock).mockImplementation((coerce) => ({ coerce })),
-  select: (select as jest.Mock).mockImplementation((select) => ({ select }))
+  assert: (assert as Mock).mockImplementation((assert) => ({ assert })),
+  take: (take as Mock).mockImplementation((take) => ({ take })),
+  ensure: (ensure as Mock).mockImplementation((ensure) => ({ ensure })),
+  coerce: (coerce as Mock).mockImplementation((coerce) => ({ coerce })),
+  select: (select as Mock).mockImplementation((select) => ({ select }))
 };
-beforeEach(() => Object.values(mocks).map((mock) => mock.mockClear()));
 
 describe(`CollectError`, () => {
   test(`succeeds`, () => {
     const errors = {
-      foo: Error(`foo error\nextra information`),
-      bar: Error(`bar error`),
-      baz: Error(`baz error`)
+      foo: new Error(`foo error\nextra information`),
+      bar: new Error(`bar error`),
+      baz: new Error(`baz error`)
     };
     const error = new CollectError(errors);
     const fn = (): void => {
@@ -37,12 +38,12 @@ describe(`CollectError`, () => {
     expect(error).toBeInstanceOf(Error);
     expect(error.errors).toBe(errors);
     expect(fn).toThrowErrorMatchingInlineSnapshot(`
-"the following errors where found:
-	foo: foo error
-		extra information
-	bar: bar error
-	baz: baz error"
-`);
+      [Error: the following errors where found:
+      	foo: foo error
+      		extra information
+      	bar: bar error
+      	baz: baz error]
+    `);
   });
 });
 
@@ -84,10 +85,10 @@ describe(`collect`, () => {
   });
   test(`fails with compact Error message`, () => {
     mocks.assert.mockImplementationOnce(() => {
-      throw Error(`a error`);
+      throw new Error(`a error`);
     });
     mocks.take.mockImplementationOnce(() => {
-      throw Error(`b error`);
+      throw new Error(`b error`);
     });
 
     const fn = (): void => {
@@ -98,17 +99,17 @@ describe(`collect`, () => {
     };
 
     expect(fn).toThrowErrorMatchingInlineSnapshot(`
-"the following errors where found:
-	b: a error
-	c: b error"
-`);
+      [Error: the following errors where found:
+      	b: a error
+      	c: b error]
+    `);
   });
   test(`fails early`, () => {
     mocks.assert.mockImplementationOnce(() => {
-      throw Error(`a error`);
+      throw new Error(`a error`);
     });
     mocks.take.mockImplementationOnce(() => {
-      throw Error(`b error`);
+      throw new Error(`b error`);
     });
 
     const fn = (): void => {
@@ -123,8 +124,8 @@ describe(`collect`, () => {
     };
 
     expect(fn).toThrowErrorMatchingInlineSnapshot(`
-"the following errors where found:
-	b: a error"
-`);
+      [Error: the following errors where found:
+      	b: a error]
+    `);
   });
 });

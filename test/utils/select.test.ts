@@ -1,12 +1,13 @@
+import { describe, expect, test, vi } from 'vitest';
+
 import * as merge from 'merge-strategies';
-import { select, Select } from '../../src/utils';
+import { type Select, select } from '../../src/utils';
 
 const mocks = {
-  shallow: jest.spyOn(merge, 'shallow'),
-  merge: jest.spyOn(merge, 'merge'),
-  deep: jest.spyOn(merge, 'deep')
+  shallow: vi.spyOn(merge, 'shallow'),
+  merge: vi.spyOn(merge, 'merge'),
+  deep: vi.spyOn(merge, 'deep')
 };
-beforeEach(() => Object.values(mocks).map((mock) => mock.mockClear()));
 
 const selector = { foo: 'bar', bar: 'baz' };
 const strategies: Array<Select.Strategy | undefined> = [
@@ -22,13 +23,15 @@ describe(`preconditions`, () => {
     expect(() =>
       select({} as any, selector)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"selection data couldn't be stringified: [object Object]"`
+      `[Error: selection data couldn't be stringified: [object Object]]`
     );
   });
   test(`fais for invalid strategy`, () => {
     expect(() =>
       select('bar', selector, { strategy: 'none' as any })
-    ).toThrowErrorMatchingInlineSnapshot(`"invalid select strategy: none"`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: invalid select strategy: none]`
+    );
   });
 });
 describe(`wo/ assert`, () => {
@@ -86,7 +89,7 @@ describe(`wo/ assert`, () => {
     });
     test(`shallow: adequately calls shallow and returns response`, () => {
       const response = {};
-      mocks.shallow.mockImplementationOnce(() => response);
+      mocks.shallow.mockImplementationOnce(() => response as any);
 
       expect(
         select('bar', { ...selector, default: 'foo' }, { strategy: 'shallow' })
@@ -98,7 +101,7 @@ describe(`wo/ assert`, () => {
     });
     test(`merge: adequately calls merge and returns response`, () => {
       const response = {};
-      mocks.merge.mockImplementationOnce(() => response);
+      mocks.merge.mockImplementationOnce(() => response as any);
 
       expect(
         select('bar', { ...selector, default: 'foo' }, { strategy: 'merge' })
@@ -110,7 +113,7 @@ describe(`wo/ assert`, () => {
     });
     test(`deep: adequately calls deep and returns response`, () => {
       const response = {};
-      mocks.deep.mockImplementationOnce(() => response);
+      mocks.deep.mockImplementationOnce(() => response as any);
 
       expect(
         select('bar', { ...selector, default: 'foo' }, { strategy: 'deep' })
@@ -128,7 +131,7 @@ describe(`w/ assert`, () => {
     expect(() =>
       select('baz', selector, { name: 'foo', assert: true })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"expected \\"foo\\" data not to be undefined"`
+      `[Error: expected "foo" data not to be undefined]`
     );
 
     for (const strategy of strategies) {

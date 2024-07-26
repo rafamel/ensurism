@@ -1,10 +1,14 @@
-import { take, Take } from '../../src/utils';
+import { describe, expect, test } from 'vitest';
+
+import { type Take, take } from '../../src/utils';
 
 describe(`no strategy`, () => {
   test(`fails w/ invalid strategy`, () => {
     expect(() =>
       take([], { strategy: 'none' as any })
-    ).toThrowErrorMatchingInlineSnapshot(`"invalid take strategy: none"`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: invalid take strategy: none]`
+    );
   });
 });
 
@@ -64,7 +68,7 @@ describe(`one`, () => {
       expect(() =>
         take([], { name: 'foo', assert: true, strategy: 'one' })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"expected \\"foo\\" data not to be undefined"`
+        `[Error: expected "foo" data not to be undefined]`
       );
     });
     test(`fails for array w/ undefined`, () => {
@@ -121,12 +125,12 @@ describe(`first (default)`, () => {
       expect(() =>
         take([], { name: 'foo', assert: true })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"expected \\"foo\\" data not to be undefined"`
+        `[Error: expected "foo" data not to be undefined]`
       );
       expect(() =>
         take([], { name: 'foo', assert: true, strategy: 'first' })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"expected \\"foo\\" data not to be undefined"`
+        `[Error: expected "foo" data not to be undefined]`
       );
     });
     test(`fails for array w/ undefined`, () => {
@@ -196,7 +200,7 @@ describe(`maybe`, () => {
       expect(() =>
         take([], { name: 'foo', assert: true, strategy: 'maybe' })
       ).toThrowErrorMatchingInlineSnapshot(
-        `"expected \\"foo\\" data not to be undefined"`
+        `[Error: expected "foo" data not to be undefined]`
       );
     });
     test(`fails for array w/ undefined`, () => {

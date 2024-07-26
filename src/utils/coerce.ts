@@ -1,9 +1,10 @@
-import { getSchema } from '../helpers/get-schema';
-import { Schema } from '../definitions';
-import { ensure, Ensure } from './ensure';
-import { Serial } from 'type-core';
+import type { Serial } from 'type-core';
 import { into } from 'pipettes';
-import { getName } from '~/helpers/get-name';
+
+import type { Schema } from '../definitions';
+import { getName } from '../helpers/get-name';
+import { getSchema } from '../helpers/get-schema';
+import { type Ensure, ensure } from './ensure';
 
 export type Coerce<
   D extends Serial.Type,
@@ -46,14 +47,14 @@ export function coerce<
       if (Array.isArray(data)) {
         if (schemaObj.type === 'array') return data;
         if (schemaObj.type === 'object') return { ...data };
-        throw Error(
+        throw new Error(
           `invalid ${getName(options, schemaObj)}coercion type for array: ` +
             schemaObj.type
         );
       } else {
         if (schemaObj.type === 'array') return Object.values(data);
         if (schemaObj.type === 'object') return data;
-        throw Error(
+        throw new Error(
           `invalid ${getName(options, schemaObj)}coercion type for object: ` +
             schemaObj.type
         );
@@ -71,7 +72,7 @@ export function coerce<
         case 'number': {
           const value = Number(data);
           if (String(value) === 'NaN') {
-            throw Error(
+            throw new Error(
               getName(options, schemaObj) +
                 `data cannot be coerced to number: ${data}`
             );
@@ -94,21 +95,21 @@ export function coerce<
             let value: any;
             try {
               value = JSON.parse(data);
-            } catch (err) {
-              throw Error(
+            } catch (_: unknown) {
+              throw new Error(
                 `invalid ${getName(options, schemaObj)}JSON data for ` +
                   `${schemaObj.type}: ${data}`
               );
             }
             return value;
           }
-          throw Error(
+          throw new Error(
             `${getName(options, schemaObj)}data cannot be coerced to ` +
               `${schemaObj.type}: ${data}`
           );
         }
         default: {
-          throw Error(
+          throw new Error(
             `invalid ${getName(options, schemaObj)}schema type: ` +
               schemaObj.type
           );
@@ -118,7 +119,7 @@ export function coerce<
     (data) => {
       if (schemaObj.type === 'null') {
         if (data) {
-          throw Error(
+          throw new Error(
             `${getName(options, schemaObj)}data cannot be coerced to null`
           );
         } else {

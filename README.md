@@ -1,12 +1,8 @@
 # ensurism
 
 [![Version](https://img.shields.io/npm/v/ensurism.svg)](https://www.npmjs.com/package/ensurism)
-[![Build Status](https://img.shields.io/travis/rafamel/ensurism/master.svg)](https://travis-ci.org/rafamel/ensurism)
-[![Coverage](https://img.shields.io/coveralls/rafamel/ensurism/master.svg)](https://coveralls.io/github/rafamel/ensurism)
-[![Dependencies](https://img.shields.io/david/rafamel/ensurism.svg)](https://david-dm.org/rafamel/ensurism)
-[![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/ensurism.svg)](https://snyk.io/test/npm/ensurism)
-[![License](https://img.shields.io/github/license/rafamel/ensurism.svg)](https://github.com/rafamel/ensurism/blob/master/LICENSE)
 [![Types](https://img.shields.io/npm/types/ensurism.svg)](https://www.npmjs.com/package/ensurism)
+[![License](https://img.shields.io/github/license/rafamel/ensurism.svg)](https://github.com/rafamel/ensurism/blob/master/LICENSE)
 
 > A validation and conditional assignment utility belt.
 
@@ -37,7 +33,9 @@ The most general util for validation is [`ensure`](#ensure), wich uses *JSON Sch
 ### Environment Variables
 
 ```typescript
-import { ensure, collect } from 'ensurism';
+import process from 'node:process';
+
+import { collect, ensure } from 'ensurism';
 
 // Will always be 'development', 'production', or 'test'
 const NODE_ENV = ensure(process.env.NODE_ENV, {
@@ -65,6 +63,8 @@ const env = collect(process.env, ({ get, assert, ensure, coerce }) => ({
 You might want to create a configuration object that relies on certain values. In the example below, we [`collect`](#collect) environment variables, and later use [`select`](#select) to conditionally set the properties `bar` and `baz` for our final configuration object.
 
 ```typescript
+import process from 'node:process';
+
 import { into } from 'pipettes';
 import { collect, select } from 'ensurism';
 
@@ -332,3 +332,4 @@ const result = collect(
   f: false
 });
 ```
+

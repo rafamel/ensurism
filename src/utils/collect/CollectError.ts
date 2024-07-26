@@ -1,6 +1,6 @@
-import type { Members } from 'type-core';
+import type { Dictionary } from 'type-core';
 
-export class CollectError<T extends Members<Error>> extends Error {
+export class CollectError<T extends Dictionary<Error>> extends Error {
   public errors: T;
   public constructor(errors: T) {
     let message = 'the following errors where found:';

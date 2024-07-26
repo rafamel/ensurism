@@ -1,14 +1,14 @@
-import { type Members, type NonDefined, TypeGuard } from 'type-core';
+import { type Dictionary, TypeGuard } from 'type-core';
 
 import { getName } from '../helpers/get-name';
 
 export type Assert<T, D extends boolean = false> = D extends true
-  ? Exclude<T, NonDefined> extends Array<infer U>
-    ? Array<Exclude<U, NonDefined>>
-    : Exclude<T, NonDefined> extends Members
-      ? { [P in keyof T]: Exclude<T[P], NonDefined> }
-      : Exclude<T, NonDefined>
-  : Exclude<T, NonDefined>;
+  ? Exclude<T, undefined> extends Array<infer U>
+    ? Array<Exclude<U, undefined>>
+    : Exclude<T, undefined> extends Dictionary
+      ? { [P in keyof T]: Exclude<T[P], undefined> }
+      : Exclude<T, undefined>
+  : Exclude<T, undefined>;
 
 export declare namespace Assert {
   export interface Options<D extends boolean = boolean> {

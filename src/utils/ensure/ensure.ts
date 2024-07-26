@@ -11,9 +11,9 @@ import { getName } from '../../helpers/get-name';
 import type { EnsureResponse, EnsureSchema } from './types';
 
 export type Ensure<
-  T extends Serial.Type,
-  D extends Serial.Type,
-  E extends Serial.Type,
+  T extends Serial,
+  D extends Serial,
+  E extends Serial,
   N extends Schema.TypeName,
   A extends boolean = false
 > = EnsureResponse<T, D, E, N, A>;
@@ -25,17 +25,17 @@ export declare namespace Ensure {
   }
 
   export type Schema<
-    T extends Serial.Type,
-    D extends Serial.Type,
-    E extends Serial.Type,
+    T extends Serial,
+    D extends Serial,
+    E extends Serial,
     N extends Schema.TypeName
   > = EnsureSchema<T, D, E, N>;
 }
 
 export function ensure<
-  T extends Serial.Type,
-  D extends Serial.Type,
-  E extends Serial.Type,
+  T extends Serial,
+  D extends Serial,
+  E extends Serial,
   N extends Schema.TypeName,
   A extends boolean = false
 >(
@@ -76,11 +76,11 @@ export function ensure<
     ajv.errors.map((error) => {
       return {
         ...error,
-        dataPath: error.dataPath.replace(/^\/data/, ''),
+        instancePath: error.instancePath.replace(/^\/data/, ''),
         schemaPath: error.schemaPath.replace(/^#\/properties\/data/, '/#'),
         message: (error.message || 'is not valid').replace(
-          /should have required property '\/?data'/,
-          'should not be undefined'
+          /must have required property '\/?data'/,
+          'must not be undefined'
         )
       };
     })

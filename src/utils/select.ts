@@ -1,4 +1,4 @@
-import type { Members, NonDefined, Serial } from 'type-core';
+import type { Dictionary, Intersection, Primitive, Serial } from 'type-core';
 import { deep, merge, shallow } from 'merge-strategies';
 import { into } from 'pipettes';
 
@@ -15,7 +15,7 @@ export type Select<
     : G extends 'fallback'
       ? T[keyof T]
       : T[Exclude<keyof T, 'default'>] & T['default'],
-  A extends true ? NonDefined : never
+  A extends true ? undefined : never
 >;
 
 export declare namespace Select {
@@ -31,11 +31,11 @@ export declare namespace Select {
   export type Strategy = 'fallback' | 'shallow' | 'merge' | 'deep';
 
   export type Selector<
-    T extends Serial.Primitive = Serial.Primitive,
-    S = Members<Serial.Type>
-  > = S & { [P in Value<T>]?: Serial.Type };
+    T extends Intersection<Primitive, Serial> = Intersection<Primitive, Serial>,
+    S = Dictionary<Serial>
+  > = S & { [P in Value<T>]?: Serial };
 
-  export type Value<T extends Serial.Primitive> =
+  export type Value<T extends Intersection<Primitive, Serial>> =
     | (T extends string ? T : never)
     | (T extends undefined ? 'undefined' : never)
     | (T extends void ? 'undefined' : never)
@@ -45,7 +45,7 @@ export declare namespace Select {
 }
 
 export function select<
-  T extends Serial.Primitive,
+  T extends Intersection<Primitive, Serial>,
   S extends Select.Selector,
   A extends boolean = false,
   G extends Select.Strategy = 'fallback'
@@ -72,7 +72,7 @@ export function select<
         // eslint-disable-next-line no-fallthrough
         default: {
           throw new Error(
-            `${getName(options)}selection data couldn't be stringified: ${data}`
+            `${getName(options)}selection data couldn't be stringified: ${data as any}`
           );
         }
       }

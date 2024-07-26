@@ -1,4 +1,10 @@
-import type { Members, Serial, UnaryFn } from 'type-core';
+import type {
+  Callable,
+  Dictionary,
+  Intersection,
+  Primitive,
+  Serial
+} from 'type-core';
 
 import type { Schema } from '../../definitions';
 import { type Assert, assert } from '../assert';
@@ -17,34 +23,37 @@ export declare namespace Collect {
     failEarly: boolean;
   }
 
-  export type Collection<O extends Members<Collector>> = UnaryFn<Actions, O>;
+  export type Collection<O extends Dictionary<Collector>> = Callable<
+    Actions,
+    O
+  >;
 
-  export type Collector<T = any> = UnaryFn<Serial.Type, T>;
+  export type Collector<T = any> = Callable<Serial, T>;
 
   export interface Actions {
-    get: () => Collector<Serial.Type>;
+    get: () => Collector<Serial>;
 
     assert: <D extends boolean = false>(
       options?: Assert.Options
-    ) => Collector<Assert<Serial.Type, D>>;
+    ) => Collector<Assert<Serial, D>>;
 
     take: <A extends boolean = false>(
       options?: Take.Options<A>
-    ) => Collector<Take<Serial.Type, A>>;
+    ) => Collector<Take<Serial, A>>;
 
     ensure: <
-      D extends Serial.Type,
-      E extends Serial.Type,
+      D extends Serial,
+      E extends Serial,
       N extends Schema.TypeName = never,
       A extends boolean = false
     >(
       schema: Ensure.Schema<any, D, E, N>,
       options?: Ensure.Options<A>
-    ) => Collector<Ensure<Serial.Type, D, E, N, A>>;
+    ) => Collector<Ensure<Serial, D, E, N, A>>;
 
     coerce: <
-      D extends Serial.Type,
-      E extends Serial.Type,
+      D extends Serial,
+      E extends Serial,
       N extends Schema.TypeName,
       A extends boolean = false
     >(
@@ -57,7 +66,7 @@ export declare namespace Collect {
       G extends Select.Strategy = 'fallback',
       A extends boolean = false
     >(
-      selector: Select.Selector<Serial.Primitive, S>,
+      selector: Select.Selector<Intersection<Primitive, Serial>, S>,
       options?: Select.Options<A, G>
     ) => Collector<Select<S, A, G>>;
   }
@@ -88,8 +97,8 @@ const actions: Collect.Actions = {
 };
 
 export function collect<
-  I extends Members<Serial.Type>,
-  O extends Members<Collect.Collector>
+  I extends Dictionary<Serial>,
+  O extends Dictionary<Collect.Collector>
 >(
   data: I,
   collection: Collect.Collection<O>,
@@ -97,7 +106,7 @@ export function collect<
 ): Collect<O> {
   const response = collection(actions);
   const results: Partial<Collect<O>> = {};
-  const errors: Members<Error> = {};
+  const errors: Dictionary<Error> = {};
 
   for (const key of Object.keys(response) as Array<keyof O & keyof I>) {
     const fn = response[key];

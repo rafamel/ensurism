@@ -7,11 +7,11 @@ import { getSchema } from '../helpers/get-schema';
 import { type Ensure, ensure } from './ensure';
 
 export type Coerce<
-  D extends Serial.Type,
-  E extends Serial.Type,
+  D extends Serial,
+  E extends Serial,
   N extends Schema.TypeName,
   A extends boolean = false
-> = Ensure<Serial.Type, D, E, N, A>;
+> = Ensure<Serial, D, E, N, A>;
 
 export declare namespace Coerce {
   export interface Options<A extends boolean = boolean> {
@@ -19,19 +19,19 @@ export declare namespace Coerce {
     assert?: A;
   }
   export type Schema<
-    D extends Serial.Type,
-    E extends Serial.Type,
+    D extends Serial,
+    E extends Serial,
     N extends Schema.TypeName
-  > = Ensure.Schema<Serial.Type, D, E, N>;
+  > = Ensure.Schema<Serial, D, E, N>;
 }
 
 export function coerce<
-  D extends Serial.Type,
-  E extends Serial.Type,
+  D extends Serial,
+  E extends Serial,
   N extends Schema.TypeName,
   A extends boolean = false
 >(
-  data: Serial.Type,
+  data: Serial,
   schema: Coerce.Schema<D, E, N>,
   options?: Coerce.Options<A>
 ): Coerce<D, E, N, A> {

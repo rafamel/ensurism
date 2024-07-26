@@ -1,4 +1,3 @@
-import type { NonDefined } from 'type-core';
 import { into } from 'pipettes';
 
 import { getName } from '../helpers/get-name';
@@ -6,7 +5,7 @@ import { assert } from './assert';
 
 export type Take<T, A extends boolean = false> = Exclude<
   T extends Array<infer U> ? U | Exclude<T, any[]> : T,
-  A extends true ? NonDefined : never
+  A extends true ? undefined : never
 >;
 
 export declare namespace Take {

@@ -1,8 +1,7 @@
 import type { JSONSchema7, JSONSchema7Type } from 'json-schema';
 import type { Serial } from 'type-core';
 
-export interface Schema<T extends Serial.Type = Serial.Type>
-  extends JSONSchema7 {
+export interface Schema<T extends Serial = Serial> extends JSONSchema7 {
   type: Schema.TypeName<T>;
   default?: Schema.Type<T>;
   examples?: Schema.Type<T>;
@@ -33,9 +32,9 @@ export declare namespace Schema {
     | 'idn-email'
     | 'idn-hostname';
 
-  export type Type<T extends Serial.Type = Serial.Type> = JSONSchema7Type & T;
+  export type Type<T extends Serial = Serial> = JSONSchema7Type & T;
 
-  export type TypeName<T extends Serial.Type = Serial.Type> =
+  export type TypeName<T extends Serial = Serial> =
     Type<T> extends undefined
       ?
           | 'null'
@@ -53,9 +52,9 @@ export declare namespace Schema {
             ? 'number' | 'integer'
             : Type<T> extends boolean
               ? 'boolean'
-              : Type<T> extends Serial.Array
+              : Type<T> extends Array<Serial>
                 ? 'array'
-                : Type<T> extends Serial.Object
+                : Type<T> extends { [key: string]: Serial }
                   ? 'object'
                   :
                       | 'null'
@@ -77,8 +76,8 @@ export declare namespace Schema {
           : T extends 'boolean'
             ? boolean
             : T extends 'array'
-              ? Serial.Array
+              ? Array<Serial>
               : T extends 'object'
-                ? Serial.Object
+                ? { [key: string]: Serial }
                 : never;
 }

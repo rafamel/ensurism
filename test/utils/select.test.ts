@@ -1,12 +1,14 @@
 import { describe, expect, test, vi } from 'vitest';
-
 import * as merge from 'merge-strategies';
 import { type Select, select } from '../../src/utils';
 
+vi.mock('merge-strategies', () =>
+  vi.importActual('merge-strategies').then((module) => ({ ...module }))
+);
 const mocks = {
-  shallow: vi.spyOn(merge, 'shallow'),
+  deep: vi.spyOn(merge, 'deep'),
   merge: vi.spyOn(merge, 'merge'),
-  deep: vi.spyOn(merge, 'deep')
+  shallow: vi.spyOn(merge, 'shallow')
 };
 
 const selector = { foo: 'bar', bar: 'baz' };

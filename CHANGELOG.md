@@ -1,3 +1,22 @@
+
+
+# [0.7.0](https://github.com/rafamel/riseup/compare/v0.6.0...v0.7.0) (2024-07-26)
+
+
+### Bug Fixes
+
+* update dependencies ([faf7bc3](https://github.com/rafamel/riseup/commit/faf7bc39e3183aafc37b2bd3c9a36f5665a190de))
+
+
+### chore
+
+* update setup ([63cf0b5](https://github.com/rafamel/riseup/commit/63cf0b5af1d84c6031cd7905c1e7795f32ed1591))
+
+
+### BREAKING CHANGES
+
+* this package is now pure ESM; node >= 22 is required.
+
 # [0.6.0](https://github.com/rafamel/ensurism/compare/v0.5.1...v0.6.0) (2021-02-14)
 
 
@@ -118,6 +137,3 @@ have changed.
 * adds schema and common types ([dc5b77c](https://github.com/rafamel/ensurism/commit/dc5b77c0e0d2fc6ee153898f1b7dc2531e5e81b2))
 * adds select ([7f9873c](https://github.com/rafamel/ensurism/commit/7f9873ca62cf3e242296416a05a01eed0408d7ce))
 * adds take function ([95a8117](https://github.com/rafamel/ensurism/commit/95a8117f9ba11d25f7b9c89179fb3864ec0f035b))
-
-
-
